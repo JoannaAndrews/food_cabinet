@@ -1,11 +1,14 @@
 import mqtt from "mqtt";
 import fs from 'fs';
 
+import dotenv from "dotenv";
+dotenv.config();
+
 export const connectMQTT = (io) => {
 
   const appId = "joanna-test-application";
   const username = `${appId}@ttn`;
-  const password = "NNSXS.QDONRCUAHF5KCNMQKO6PGLKGYJR5QLGPNW5TZMQ.ARWRQ332TVEYVZBEPOGXTMA2L5RETZP6ADLV6YEYJLY5KBXQSTVQ";
+  const password = process.env.MQTT_KEY;
 
   const client = mqtt.connect("mqtts://nam1.cloud.thethings.network:8883", {
     username, password
