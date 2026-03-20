@@ -18,7 +18,6 @@ function App() {
 
   useEffect(() => {
     socket.on("uplink", (msg) => {
-      // handleNewData(msg)
       setData(prev => [...prev, msg]);
     });
   }, []);
