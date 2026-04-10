@@ -4,6 +4,8 @@ import 'dotenv/config';
 import { connectMQTT } from './config/mqtt.js';
 import { createServer } from "http";
 import { Server } from "socket.io";
+import tempDataRouter from './routes/tempDataRoute.js';
+
 
 const app = express();
 const httpServer = createServer(app);
@@ -20,6 +22,8 @@ app.use(express.json());
 connectMQTT(io);
 
 const port = 5000;
+
+app.use("/data", tempDataRouter);
 
 httpServer.listen(port, () => {
   console.log(`Server + Socket.IO running on http://localhost:${port}`);

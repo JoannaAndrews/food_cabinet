@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
+  "nodemonConfig": {
+    "ignore": [
+      "data/data.json"
+    ]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js --config nodemon.json"
   },
   "author": "",
   "license": "ISC",
