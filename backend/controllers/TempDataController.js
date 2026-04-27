@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-//to get temperature data
+//to get weight data
 export async function getTempData(req, res) {
   const listUrl = `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/storage/kv/namespaces/${process.env.CF_KV_NAMESPACE_ID}/keys?prefix=sensor:`;
 
