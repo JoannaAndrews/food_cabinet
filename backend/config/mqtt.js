@@ -27,14 +27,14 @@ export const connectMQTT = (io) => {
 
     const decoded = payload?.uplink_message?.decoded_payload;
 
-    if (!decoded || typeof decoded.temperature != "number") {
+    if (!decoded || typeof decoded.weight != "number") {
       return;
     }
 
-    //update data.json by adding new temperature entry
+    //update data.json by adding new weight entry
     const entry = {
       time: new Date(payload.received_at).toISOString(),
-      temperature: payload.uplink_message.decoded_payload.temperature
+      weight: payload.uplink_message.decoded_payload.weight
     };
 
     // Use timestamp as key
