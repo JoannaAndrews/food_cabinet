@@ -32,7 +32,7 @@ function App() {
 
     } catch (err) {
       console.error(
-        "Failsed to fetch data",
+        "Failed to fetch data",
         err?.response || err.message || err
       );
     }
