@@ -19,7 +19,7 @@ const API_BASE = 'http://localhost:5000';
 function App() {
   const [data, setData] = useState([]);
 
-  // to fetch the temperature data from the server side
+  // to fetch the weight data from the server side
   const fetchTempData = async () => {
     try {
 
@@ -75,14 +75,14 @@ function App() {
 
       <div className=" space-y-4 max-h-[500px] -mx-5 overflow-y-auto pr-2">
         {data.map((data_item) => {
-          const { temperature, time } = data_item;
+          const { weight, time } = data_item;
           return (
             <div key={time} className="flex items-center lg:flex-col xl:flex-row md:flex-row justify-between p-1 -mx-0 lg:p-4 md:p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 border border-gray-100">
               <div className=" flex items-center gap-1 md:gap-4 lg:gap-3">
 
                 <div >
                   <p >
-                    {temperature}
+                    {weight}
                   </p>
 
                   <p >
