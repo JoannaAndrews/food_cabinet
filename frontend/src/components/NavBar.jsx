@@ -79,7 +79,7 @@ const NavBar = ({ user: propUser, onLogout }) => {
               </div>
               <div className={navbarStyles.userTextContainer}>
                 <p className={navbarStyles.userName}>{user?.name || "User"}</p>
-                <p className={navbarStyles.userEmail}>{user?.userEmail || "user@expensetracker.com"}</p>
+                <p className={navbarStyles.userEmail}>{user?.email || "user@gmail.com"}</p>
               </div>
               <ChevronDown className={navbarStyles.chevronIcon(menuOpen)}></ChevronDown>
 
@@ -97,7 +97,7 @@ const NavBar = ({ user: propUser, onLogout }) => {
                     {user?.name || "User"}
                   </div>
                   <div className={navbarStyles.dropdownEmail}>
-                    {user?.email || "user@expensetracker.com"}
+                    {user?.email || "user@gmail.com"}
                   </div>
                 </div>
               )}
