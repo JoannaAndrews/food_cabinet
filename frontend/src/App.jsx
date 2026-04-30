@@ -1,112 +1,213 @@
-import { useEffect, useState, useMemo } from "react";
-import './App.css';
-import axios from 'axios';
 
-import { io } from "socket.io-client";
+import { useState, useEffect } from "react";
+import { Route, Routes, useLocation, useNavigate, Navigate } from "react-router";
+import Layout from "./components/Layout.jsx";
+import Login from "./pages/Login.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Profile from "./pages/Profile.jsx";
+import axios from "axios";
 
-const socket = io("http://localhost:5000");
+const API_URL = "http://localhost:5000";
 
-//step 1) receive and display data from Feather M0
-//step 2) have the received data persist in data.json (data does not reset after refresh)
-//step 3) if button has been pressed (or data size has reached a certain pt?), append=False;
-// on next uplink, we overwrite data.json
+//to get transaction from localstorage
+const getTransactionsFromStorage = () => {
+  const saved = localStorage.getItem("transactions");
+  return saved ? JSON.parse(saved) : [];
+}
 
-//step 4: once data is reliably stored in data.json, an can be retrieved from there, save it in a var
-//step 5: use this data.json file to create charts
+//to protect the routes
+const ProtectedRoute = ({ user, children }) => {
+  const localToken = localStorage.getItem("token");
+  const sessionToken = sessionStorage.getItem("token");
+  const hasToken = localToken || sessionToken;
 
-const API_BASE = 'http://localhost:5000';
+  if (!user || !hasToken) {
+    return <Navigate to="/login" replace></Navigate>
+  }
+  return children;
+}
 
-function App() {
-  const [data, setData] = useState([]);
+//to scroll to top when page gets reload or new page is visited
+const ScrollToTop = () => {
+  const location = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname]);
 
-  // to fetch the temperature data from the server side
-  const fetchTempData = async () => {
+  return null;
+}
+
+const App = () => {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   const savedUser =
+  //     JSON.parse(localStorage.getItem("user")) ||
+  //     JSON.parse(sessionStorage.getItem("user"));
+
+  //   const savedToken =
+  //     localStorage.getItem("token") ||
+  //     sessionStorage.getItem("token");
+
+  //   if (savedUser && savedToken) {
+  //     setUser(savedUser);
+  //     setToken(savedToken);
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // }, []);
+
+  //to save the token
+  const persistAuth = (userObj, tokenStr, remember = false) => {
     try {
-
-      const [dataRes] = await Promise.all([
-        axios.get(`${API_BASE}/data`),
-      ]);
-
-      setData(dataRes.data);
-      // setLastUpdated(new Date());
-
+      if (remember) {
+        if (userObj) localStorage.setItem("user", JSON.stringify(userObj));
+        if (tokenStr) localStorage.setItem("token", tokenStr);
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("token");
+      } else {
+        if (userObj) sessionStorage.setItem("user", JSON.stringify(userObj));
+        if (tokenStr) sessionStorage.setItem("token", tokenStr);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
+      setUser(userObj || null);
+      setToken(tokenStr || null);
     } catch (err) {
-      console.error(
-        "Failed to fetch data",
-        err?.response || err.message || err
-      );
+      console.error("persistAuth error: ", err);
     }
+  }
+
+  const clearAuth = () => {
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+
+    } catch (error) {
+      console.error("clearAuth error: ", error);
+    }
+    setUser(null);
+    setToken(null);
   };
 
+  //to update user data both in state and storage
+  const updateUserData = (updatedUser) => {
+    setUser(updatedUser);
+
+    const localToken = localStorage.getItem("token");
+    const sessionToken = sessionStorage.getItem("token");
+
+    if (localToken) {
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } else if (sessionToken) {
+      sessionStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+  }
+
+  //try to load user with token when mounted
   useEffect(() => {
-    fetchTempData();
-    // socket.on("uplink", (msg) => {
-    //   fetchTempData();
-    // });
+    (async () => {
+      try {
+        const localUserRaw = localStorage.getItem("user");
+        const sessionUserRaw = sessionStorage.getItem("user");
+        const storedUser = localUserRaw
+          ? JSON.parse(localUserRaw)
+          : sessionUserRaw
+            ? JSON.parse(sessionUserRaw)
+            : null;
+        const localToken = localStorage.getItem("token");
+        const sessionToken = sessionStorage.getItem("token");
+
+        const storedToken = localToken || sessionToken || null;
+        const tokenFromLocal = !!localToken;
+
+        if (storedUser) {
+          setUser(storedUser);
+          setToken(storedToken);
+          setIsLoading(false);
+          return;
+        }
+
+        if (storedToken) {
+          try {
+            const res = await axios.get(`${API_URL}/api/user/me`, {
+              headers: { Authorization: `Bearer ${storedToken}` }
+            });
+            const profile = res.data;
+            persistAuth(profile, storedToken, tokenFromLocal);
+          } catch (fetchErr) {
+            console.warn("Could not fetch profile with the stored token:", fetchErr);
+            clearAuth();
+          }
+        }
+
+      } catch (err) {
+        console.error("error bootstrapping auth:", err);
+      } finally {
+        setIsLoading(false);
+
+        try {
+
+          setTransactions(getTransactionsFromStorage());
+
+        } catch (txError) {
+          console.error("Error loading transactions:", txError);
+        }
+      }
+    })();
   }, []);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+    } catch (error) {
+      console.error("error saving transactions: ", transactions);
+    }
+  }, [transactions])
 
-  // get stats data according to time
-  const stats = useMemo(() => {
-    const now = new Date();
-    const thirtyDaysAgo = new Date(now);
-    thirtyDaysAgo.setDate(now.getDate() - 30);
+  const handleLogin = (userData, remember = false, tokenFromApi = null) => {
+    persistAuth(userData, tokenFromApi, remember);
 
-    const last30DaysData = data.filter(
-      (t) => new Date(t.time) >= thirtyDaysAgo,
-    );
+    navigate("/");
+  }
 
-    const allTimeData = data;
+  const handleSignup = (userData, remember = false, tokenFromApi = null) => {
+    persistAuth(userData, tokenFromApi, remember);
+    navigate("/");
+  }
 
-    return {
-      last30DaysData,
-      allTimeData
-    };
-  }, [data]);
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login");
+  }
 
 
   return (
-    <div>
-      <h1>Live LoRaWAN Data</h1>
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+    <>
+      <Routes>
+        <Route path="/login" element={<Login onLogin={handleLogin} API_URL="http://localhost:5000"></Login>}></Route>
+        <Route path="/signup" element={<SignUp onSignup={handleSignup}></SignUp>}></Route>
 
+        <Route element={
+          <ProtectedRoute user={user}>
+            <Layout user={user} onLogout={handleLogout}></Layout>
+          </ProtectedRoute>
+        }>
+          <Route path="/" element={<Dashboard></Dashboard>}></Route>
+          <Route path="/profile" element={<Profile user={user} onUpdateProfile={updateUserData} onLogout={handleLogout}></Profile>}></Route>
 
+        </Route>
+      </Routes>
+    </>
 
-
-      <div className=" space-y-4 max-h-[500px] -mx-5 overflow-y-auto pr-2">
-        {data.map((data_item) => {
-          const { weight, time } = data_item;
-          return (
-            <div key={time} className="flex items-center lg:flex-col xl:flex-row md:flex-row justify-between p-1 -mx-0 lg:p-4 md:p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 border border-gray-100">
-              <div className=" flex items-center gap-1 md:gap-4 lg:gap-3">
-
-                <div >
-                  <p >
-                    {weight}
-                  </p>
-
-                  <p >
-                    {new Date(time).toLocaleDateString()}
-                  </p>
-                </div>
-
-              </div>
-            </div>
-          );
-        })}
-
-        {data.length === 0 && (<div>
-          <p>
-            No recent data
-          </p>
-        </div>)}
-
-      </div>
-
-
-    </div>
-  );
+  )
 }
 
-
-export default App
+export default App;
