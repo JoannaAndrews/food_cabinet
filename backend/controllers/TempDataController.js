@@ -4,6 +4,7 @@ dotenv.config();
 const MAX_TIMESTAMPS = 120;
 const BASELINE_KEY = "baseline_weight";
 const DEFAULT_BASELINE_WEIGHT = 100;
+const MIN_BASELINE_WEIGHT = 25;
 const BASELINE_UPDATE_THRESHOLD = 0.3;
 
 const getKvValueUrl = (key) =>
@@ -61,6 +62,10 @@ async function setBaselineWeight(nextBaselineWeight) {
 //to get weight data
 export async function getTempData(req, res) {
   let baselineWeight = await getOrCreateBaselineWeight();
+  if (baselineWeight < MIN_BASELINE_WEIGHT) {
+    baselineWeight = MIN_BASELINE_WEIGHT;
+    await setBaselineWeight(baselineWeight);
+  }
   const listUrl = `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/storage/kv/namespaces/${process.env.CF_KV_NAMESPACE_ID}/keys?prefix=sensor:`;
 
   const list = await fetch(listUrl, {
@@ -90,8 +95,8 @@ export async function getTempData(req, res) {
   if (latestWeight > 0 && baselineWeight > 0) {
     const relativeDifference = Math.abs(latestWeight - baselineWeight) / baselineWeight;
     if (relativeDifference > BASELINE_UPDATE_THRESHOLD) {
-      await setBaselineWeight(latestWeight);
-      baselineWeight = latestWeight;
+      baselineWeight = Math.max(latestWeight, MIN_BASELINE_WEIGHT);
+      await setBaselineWeight(baselineWeight);
     }
   }
 
