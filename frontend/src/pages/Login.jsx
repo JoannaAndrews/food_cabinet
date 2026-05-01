@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { useNavigate, Link } from "react-router";
 import axios from "axios";
 
-const Login = ({ onLogin, API_URL = "http://localhost:5000" }) => {
+const Login = ({ onLogin, onGuestLogin, API_URL = "http://localhost:5000" }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -189,6 +189,16 @@ const Login = ({ onLogin, API_URL = "http://localhost:5000" }) => {
             <Link to='/signup' className={loginStyles.signUpLink}>
               Create One
             </Link>
+          </div>
+
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={onGuestLogin}
+              className={loginStyles.button}
+            >
+              Or... Continue as Guest
+            </button>
           </div>
 
         </div>

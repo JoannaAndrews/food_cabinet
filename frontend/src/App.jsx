@@ -19,8 +19,16 @@ const ProtectedRoute = ({ user, children }) => {
   const sessionToken = sessionStorage.getItem("token");
   const hasToken = localToken || sessionToken;
 
-  if (!user || !hasToken) {
+  // allow through if they have a token OR are a guest
+  if (!user || (!hasToken && !user?.isGuest)) {
     return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+const GuestRoute = ({ user, children }) => {
+  if (user?.isGuest) {
+    return <Navigate to="/" replace />;
   }
   return children;
 };
@@ -141,6 +149,14 @@ const App = () => {
     }
   }, [transactions]);
 
+  // Guest user code
+  const handleGuestLogin = () => {
+    const guestUser = { name: "Guest", email: "", isGuest: true };
+    setUser(guestUser);
+    setToken(null);
+    navigate("/");
+  };
+
   const handleLogin = (userData, remember = false, tokenFromApi = null) => {
     persistAuth(userData, tokenFromApi, remember);
     navigate("/");
@@ -164,7 +180,7 @@ const App = () => {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/login" element={<Login onLogin={handleLogin} API_URL={API_URL} />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} onGuestLogin={handleGuestLogin} API_URL={API_URL} />} />
         <Route path="/signup" element={<SignUp onSignup={handleSignup} />} />
         <Route
           element={(
@@ -176,7 +192,11 @@ const App = () => {
           <Route path="/" element={<Dashboard />} />
           <Route
             path="/profile"
-            element={<Profile user={user} onUpdateProfile={updateUserData} onLogout={handleLogout} />}
+            element={
+              <GuestRoute user={user}>
+                <Profile user={user} onUpdateProfile={updateUserData} onLogout={handleLogout} />
+              </GuestRoute>
+            }
           />
         </Route>
       </Routes>
@@ -185,3 +205,4 @@ const App = () => {
 };
 
 export default App;
+
