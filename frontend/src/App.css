@@ -40,3 +40,42 @@
 .read-the-docs {
   color: #888;
 }
+
+.capacity-bar-wrap {
+  margin-bottom: 0.5rem;
+}
+
+.capacity-label {
+  width: 40px;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.capacity-label-top {
+  margin-bottom: 4px;
+}
+
+.capacity-label-bottom {
+  margin-top: 4px;
+}
+
+.capacity-bar {
+  position: relative;
+  width: 40px;
+  height: 160px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  overflow: hidden;
+}
+
+.capacity-bar-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--capacity-fill, 0%);
+  background-color: var(--capacity-color, #2563eb);
+  transition: height 300ms ease;
+}
