@@ -152,8 +152,9 @@ const App = () => {
   // Guest user code
   const handleGuestLogin = () => {
     const guestUser = { name: "Guest", email: "", isGuest: true };
+    sessionStorage.setItem("user", JSON.stringify(guestUser));
     setUser(guestUser);
-    setToken(null);
+    // setToken(null);
     navigate("/");
   };
 
