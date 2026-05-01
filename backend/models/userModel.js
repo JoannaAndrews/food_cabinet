@@ -14,6 +14,21 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  volunteerStatus: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
+  fillSubscribed: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  emptySubscribed: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 });
 
