@@ -3,6 +3,7 @@ dotenv.config();
 
 const MAX_TIMESTAMPS = 120;
 const BASELINE_KEY = "baseline_weight";
+const BATTERY_KEY = "battery";
 const DEFAULT_BASELINE_WEIGHT = 100;
 const MIN_BASELINE_WEIGHT = 25;
 const PREV_WEIGHT_THRESHOLD_MULTIPLIER = 1.3;
@@ -59,9 +60,43 @@ async function setBaselineWeight(nextBaselineWeight) {
   }
 }
 
+async function getBatteryPercent() {
+  const batteryUrl = getKvValueUrl(BATTERY_KEY);
+  const batteryRes = await fetch(batteryUrl, {
+    headers: getAuthHeaders()
+  });
+
+  if (!batteryRes.ok) {
+    return null;
+  }
+
+  const raw = (await batteryRes.text()).trim();
+  if (!raw) {
+    return null;
+  }
+
+  const parsedNumber = Number(raw);
+  if (Number.isFinite(parsedNumber)) {
+    return parsedNumber;
+  }
+
+  try {
+    const parsedJson = JSON.parse(raw);
+    if (typeof parsedJson === "number" && Number.isFinite(parsedJson)) {
+      return parsedJson;
+    }
+  } catch {
+    // Non-JSON value, keep fallback null.
+  }
+
+  return null;
+}
+
 //to get weight data
 export async function getTempData(req, res) {
   let baselineWeight = await getOrCreateBaselineWeight();
+  let batteryPercent = null;
+  batteryPercent = await getBatteryPercent();
   if (baselineWeight < MIN_BASELINE_WEIGHT) {
     baselineWeight = MIN_BASELINE_WEIGHT;
     await setBaselineWeight(baselineWeight);
@@ -108,6 +143,7 @@ export async function getTempData(req, res) {
 
   res.json({
     baseline_weight: baselineWeight,
+    battery_percent: batteryPercent,
     capacity_filled: Number(capacityFilled.toFixed(2)),
     data: values
   });
