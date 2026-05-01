@@ -18,6 +18,12 @@
   margin-top: 4px;
 }
 
+.capacity-food-level-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #959b97;
+}
+
 .capacity-bar {
   position: relative;
   width: 80px;

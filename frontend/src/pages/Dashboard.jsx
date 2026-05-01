@@ -149,7 +149,7 @@ function Dashboard() {
           color: "#1e293b",
         }}
       >
-        We have {currentWeight.toFixed(1)} lbs of Food!
+        {currentWeight.toFixed(1)} lbs of food is available!
       </h2>
 
       <div className="mb-4 rounded-xl border border-gray-100 p-3">
@@ -172,7 +172,7 @@ function Dashboard() {
                 }}
               />
             </div>
-            <div className="capacity-label capacity-label-bottom">Empty</div>
+            <div className="capacity-label capacity-label-bottom capacity-food-level-label">Food Level</div>
           </div>
           <div style={{ gridColumn: 3, justifySelf: "end" }}>
             <button
@@ -249,7 +249,8 @@ function Dashboard() {
             {chartData.points
               .filter((_, idx) => idx % 6 === 0 || idx === chartData.points.length - 1)
               .map((p) => <circle key={p.time} cx={p.x} cy={p.y} r="3.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />)}
-            <text x={14} y={18} fontSize="12" fill="#334155">Weight (lbs)</text>
+            <text x={14} y={9} fontSize="12" fill="#334155">Weight (lbs)</text>
+            <text x={chartData.width / 2} y={chartData.height - 4} textAnchor="middle" fontSize="12" fill="#334155">Time</text>
           </svg>
         </div>
       )}
