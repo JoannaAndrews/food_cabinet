@@ -5,7 +5,7 @@ const MAX_TIMESTAMPS = 120;
 const BASELINE_KEY = "baseline_weight";
 const DEFAULT_BASELINE_WEIGHT = 100;
 const MIN_BASELINE_WEIGHT = 25;
-const BASELINE_UPDATE_THRESHOLD = 0.3;
+const PREV_WEIGHT_THRESHOLD_MULTIPLIER = 1.3;
 
 const getKvValueUrl = (key) =>
   `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/storage/kv/namespaces/${process.env.CF_KV_NAMESPACE_ID}/values/${encodeURIComponent(key)}`;
@@ -91,10 +91,10 @@ export async function getTempData(req, res) {
   // Sort by time
   values.sort((a, b) => new Date(a.time) - new Date(b.time));
   const latestWeight = values.length > 0 ? Number(values[values.length - 1].weight) : 0;
+  const prevWeight = values.length > 1 ? Number(values[values.length - 2].weight) : 0;
 
-  if (latestWeight > 0 && baselineWeight > 0) {
-    const relativeDifference = Math.abs(latestWeight - baselineWeight) / baselineWeight;
-    if (relativeDifference > BASELINE_UPDATE_THRESHOLD) {
+  if (latestWeight > 0 && prevWeight > 0) {
+    if (latestWeight > prevWeight * PREV_WEIGHT_THRESHOLD_MULTIPLIER) {
       baselineWeight = Math.max(latestWeight, MIN_BASELINE_WEIGHT);
       await setBaselineWeight(baselineWeight);
     }

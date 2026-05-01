@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import "../App.css";
 
 const socket = io("http://localhost:5000");
 const USE_MOCK_DATA = true;
@@ -27,6 +28,7 @@ const buildMockData = () => {
 function Dashboard() {
   const [data, setData] = useState([]);
   const [capacityFilled, setCapacityFilled] = useState(0);
+  const currentWeight = data.length > 0 ? Number(data[data.length - 1].weight) : 0;
 
   const fetchTempData = async () => {
     try {
@@ -113,7 +115,18 @@ function Dashboard() {
 
   return (
     <div>
-      <h1>Live LoRaWAN Data</h1>
+      <h1>Live Food Cabinet Data</h1>
+      <h2
+        style={{
+          textAlign: "center",
+          marginBottom: "18px",
+          fontSize: "1.35rem",
+          fontWeight: 700,
+          color: "#1e293b",
+        }}
+      >
+        We have {currentWeight.toFixed(1)} lbs of Food!
+      </h2>
 
       <div className="mb-4 rounded-xl border border-gray-100 p-3">
         <div
@@ -126,6 +139,7 @@ function Dashboard() {
           <div className="capacity-bar-wrap" style={{ gridColumn: 2 }}>
             <div className="capacity-label capacity-label-top">Full</div>
             <div className="capacity-bar">
+              <div className="capacity-bar-text">{capacityFilled.toFixed(1)}%</div>
               <div
                 className="capacity-bar-fill"
                 style={{
@@ -135,12 +149,6 @@ function Dashboard() {
               />
             </div>
             <div className="capacity-label capacity-label-bottom">Empty</div>
-          </div>
-          <div
-            className="text-lg font-semibold text-slate-700"
-            style={{ gridColumn: 3, justifySelf: "start", marginLeft: "12px" }}
-          >
-            {capacityFilled.toFixed(1)}% Filled
           </div>
         </div>
       </div>
