@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate, Navigate } from "react-router";
 import Layout from "./components/Layout.jsx";
@@ -10,33 +9,29 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000";
 
-//to get transaction from localstorage
 const getTransactionsFromStorage = () => {
   const saved = localStorage.getItem("transactions");
   return saved ? JSON.parse(saved) : [];
-}
+};
 
-//to protect the routes
 const ProtectedRoute = ({ user, children }) => {
   const localToken = localStorage.getItem("token");
   const sessionToken = sessionStorage.getItem("token");
   const hasToken = localToken || sessionToken;
 
   if (!user || !hasToken) {
-    return <Navigate to="/login" replace></Navigate>
+    return <Navigate to="/login" replace />;
   }
   return children;
-}
+};
 
-//to scroll to top when page gets reload or new page is visited
 const ScrollToTop = () => {
   const location = useLocation();
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
-
   return null;
-}
+};
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -45,24 +40,6 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const savedUser =
-  //     JSON.parse(localStorage.getItem("user")) ||
-  //     JSON.parse(sessionStorage.getItem("user"));
-
-  //   const savedToken =
-  //     localStorage.getItem("token") ||
-  //     sessionStorage.getItem("token");
-
-  //   if (savedUser && savedToken) {
-  //     setUser(savedUser);
-  //     setToken(savedToken);
-  //   } else {
-  //     navigate("/login");
-  //   }
-  // }, []);
-
-  //to save the token
   const persistAuth = (userObj, tokenStr, remember = false) => {
     try {
       if (remember) {
@@ -81,7 +58,7 @@ const App = () => {
     } catch (err) {
       console.error("persistAuth error: ", err);
     }
-  }
+  };
 
   const clearAuth = () => {
     try {
@@ -89,7 +66,6 @@ const App = () => {
       localStorage.removeItem("token");
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("token");
-
     } catch (error) {
       console.error("clearAuth error: ", error);
     }
@@ -97,10 +73,8 @@ const App = () => {
     setToken(null);
   };
 
-  //to update user data both in state and storage
   const updateUserData = (updatedUser) => {
     setUser(updatedUser);
-
     const localToken = localStorage.getItem("token");
     const sessionToken = sessionStorage.getItem("token");
 
@@ -109,9 +83,8 @@ const App = () => {
     } else if (sessionToken) {
       sessionStorage.setItem("user", JSON.stringify(updatedUser));
     }
-  }
+  };
 
-  //try to load user with token when mounted
   useEffect(() => {
     (async () => {
       try {
@@ -122,9 +95,9 @@ const App = () => {
           : sessionUserRaw
             ? JSON.parse(sessionUserRaw)
             : null;
+
         const localToken = localStorage.getItem("token");
         const sessionToken = sessionStorage.getItem("token");
-
         const storedToken = localToken || sessionToken || null;
         const tokenFromLocal = !!localToken;
 
@@ -143,20 +116,16 @@ const App = () => {
             const profile = res.data;
             persistAuth(profile, storedToken, tokenFromLocal);
           } catch (fetchErr) {
-            console.warn("Could not fetch profile with the stored token:", fetchErr);
+            console.warn("Could not fetch profile with stored token:", fetchErr);
             clearAuth();
           }
         }
-
       } catch (err) {
         console.error("error bootstrapping auth:", err);
       } finally {
         setIsLoading(false);
-
         try {
-
           setTransactions(getTransactionsFromStorage());
-
         } catch (txError) {
           console.error("Error loading transactions:", txError);
         }
@@ -170,44 +139,49 @@ const App = () => {
     } catch (error) {
       console.error("error saving transactions: ", transactions);
     }
-  }, [transactions])
+  }, [transactions]);
 
   const handleLogin = (userData, remember = false, tokenFromApi = null) => {
     persistAuth(userData, tokenFromApi, remember);
-
     navigate("/");
-  }
+  };
 
   const handleSignup = (userData, remember = false, tokenFromApi = null) => {
     persistAuth(userData, tokenFromApi, remember);
     navigate("/");
-  }
+  };
 
   const handleLogout = () => {
     clearAuth();
     navigate("/login");
-  }
+  };
 
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <>
+      <ScrollToTop />
       <Routes>
-        <Route path="/login" element={<Login onLogin={handleLogin} API_URL="http://localhost:5000"></Login>}></Route>
-        <Route path="/signup" element={<SignUp onSignup={handleSignup}></SignUp>}></Route>
-
-        <Route element={
-          <ProtectedRoute user={user}>
-            <Layout user={user} onLogout={handleLogout}></Layout>
-          </ProtectedRoute>
-        }>
-          <Route path="/" element={<Dashboard></Dashboard>}></Route>
-          <Route path="/profile" element={<Profile user={user} onUpdateProfile={updateUserData} onLogout={handleLogout}></Profile>}></Route>
-
+        <Route path="/login" element={<Login onLogin={handleLogin} API_URL={API_URL} />} />
+        <Route path="/signup" element={<SignUp onSignup={handleSignup} />} />
+        <Route
+          element={(
+            <ProtectedRoute user={user}>
+              <Layout user={user} onLogout={handleLogout} />
+            </ProtectedRoute>
+          )}
+        >
+          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/profile"
+            element={<Profile user={user} onUpdateProfile={updateUserData} onLogout={handleLogout} />}
+          />
         </Route>
       </Routes>
     </>
-
-  )
-}
+  );
+};
 
 export default App;
