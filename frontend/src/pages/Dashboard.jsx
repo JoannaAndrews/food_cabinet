@@ -28,7 +28,13 @@ const buildMockData = () => {
 function Dashboard() {
   const [data, setData] = useState([]);
   const [capacityFilled, setCapacityFilled] = useState(0);
+  const [batteryPercent, setBatteryPercent] = useState(null);
   const currentWeight = data.length > 0 ? Number(data[data.length - 1].weight) : 0;
+
+  const handleSendFilledNotification = () => {
+    console.log(`Notification requested: cabinet filled at ${currentWeight.toFixed(1)} lbs`);
+    window.alert("Notification sent: cabinet is filled.");
+  };
 
   const fetchTempData = async () => {
     try {
@@ -37,6 +43,7 @@ function Dashboard() {
         const latestWeight = mockData.length > 0 ? Number(mockData[mockData.length - 1].weight) : 0;
         const mockCapacityFilled = (latestWeight / DEFAULT_BASELINE_WEIGHT) * 100;
         setCapacityFilled(Number(mockCapacityFilled.toFixed(2)));
+        setBatteryPercent(null);
         setData(mockData);
         return;
       }
@@ -53,8 +60,12 @@ function Dashboard() {
           return serverBaseline > 0 ? (latestWeight / serverBaseline) * 100 : 0;
         })()
         : Number(payload?.capacity_filled ?? 0);
+      const serverBattery = Array.isArray(payload)
+        ? null
+        : Number(payload?.battery_percent);
 
       setCapacityFilled(Number.isFinite(serverCapacity) ? serverCapacity : 0);
+      setBatteryPercent(Number.isFinite(serverBattery) ? serverBattery : null);
       setData(serverData);
     } catch (err) {
       console.error("Failed to fetch data", err?.response || err.message || err);
@@ -112,9 +123,22 @@ function Dashboard() {
   }, [data]);
 
   const capacityBarColor = capacityFilled < 25 ? "#dc2626" : capacityFilled <= 50 ? "#eab308" : "#16a34a";
+  const normalizedBatteryPercent =
+    batteryPercent == null ? null : Math.max(0, Math.min(100, Number(batteryPercent)));
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
+      <div className="battery-widget" style={{ position: "absolute", top: 0, right: 0 }}>
+        <div className="battery-icon">
+          <div
+            className="battery-fill"
+            style={{ "--battery-fill": `${normalizedBatteryPercent ?? 0}%` }}
+          />
+        </div>
+        <span className="battery-text">
+          Battery: {normalizedBatteryPercent == null ? "N/A" : `${normalizedBatteryPercent.toFixed(0)}%`}
+        </span>
+      </div>
       <h1>Live Food Cabinet Data</h1>
       <h2
         style={{
@@ -149,6 +173,23 @@ function Dashboard() {
               />
             </div>
             <div className="capacity-label capacity-label-bottom">Empty</div>
+          </div>
+          <div style={{ gridColumn: 3, justifySelf: "end" }}>
+            <button
+              type="button"
+              onClick={handleSendFilledNotification}
+              style={{
+                padding: "10px 14px",
+                borderRadius: "10px",
+                border: "1px solid #cbd5e1",
+                backgroundColor: "#ffffff",
+                color: "#0f172a",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Send notification that cabinet is filled
+            </button>
           </div>
         </div>
       </div>
