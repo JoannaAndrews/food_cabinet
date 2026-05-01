@@ -5,12 +5,13 @@ import { useState, useRef, useEffect } from "react";
 import { Home, ArrowUp, ArrowDown, User, LogOut, X, Menu } from 'lucide-react';
 
 
-const MENU_ITEMS = [
-  { text: "Dashboard", path: "/", icon: <Home size={20}></Home> },
-  { text: "Profile", path: "/profile", icon: <User size={20}></User> },
-]
-
 const SideBar = ({ user, isCollapsed, setIsCollapsed }) => {
+  const MENU_ITEMS = user?.isGuest === true ? [
+    { text: "Dashboard", path: "/", icon: <Home size={20} /> },
+  ] : [
+    { text: "Dashboard", path: "/", icon: <Home size={20} /> },
+    { text: "Profile", path: "/profile", icon: <User size={20} /> },
+  ]
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const sidebarRef = useRef(null);

@@ -107,14 +107,18 @@ const NavBar = ({ user: propUser, onLogout }) => {
         }
 
         <div className={navbarStyles.menuItemContainer}>
-          <button onClick={() => {
-            setMenuOpen(false);
-            navigate("/profile");
-          }} className={navbarStyles.menuItem}>
 
-            <User className=" w-4 h-4"></User>
-            <span>My Profile</span>
-          </button>
+          {!user?.isGuest && (
+            <button onClick={() => {
+              setMenuOpen(false);
+              navigate("/profile");
+            }} className={navbarStyles.menuItem}>
+
+              <User className=" w-4 h-4"></User>
+              <span>My Profile</span>
+            </button>
+          )}
+
         </div>
 
         <div className={navbarStyles.menuItemBorder}>
