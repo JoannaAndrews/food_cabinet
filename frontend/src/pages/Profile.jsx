@@ -51,6 +51,11 @@ PasswordInput.displayName = 'PasswordInput';
 
 const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
 
+  const [subscriptions, setSubscriptions] = useState({
+    fillSubscribed: propUser?.fillSubscribed ?? false,
+    emptySubscribed: propUser?.emptySubscribed ?? false,
+  });
+
   const navigate = useNavigate();
   const [user, setUser] = useState({
     name: '',
@@ -121,12 +126,32 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
           const userData = data.user || data;
           setUser(userData);
           setTempUser(userData);
+          setSubscriptions({
+            fillSubscribed: userData.fillSubscribed ?? false,
+            emptySubscribed: userData.emptySubscribed ?? false,
+          });
         }
       } catch (error) {
         toast.error("Failed to load user data");
       }
     };
     fetchUserData();
+  }, [handleApiRequest]);
+
+  // Handle subscription changes
+  const handleSubscriptionChange = useCallback(async (type, value) => {
+    const endpoint = type === "fill" ? "/user/subscription/fill" : "/user/subscription/empty";
+
+    try {
+      await handleApiRequest("patch", endpoint, { subscriptionStatus: value });
+      setSubscriptions(prev => ({
+        ...prev,
+        [type === "fill" ? "fillSubscribed" : "emptySubscribed"]: value
+      }));
+      toast.success(`${type === "fill" ? "Fill" : "Empty"} subscription updated!`);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update subscription");
+    }
   }, [handleApiRequest]);
 
   // Input change handlers
@@ -332,6 +357,44 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
             <button onClick={handleLogout} className={`${profileStyles.buttonPrimary} mt-6 w-full hover:opacity-90 transition-opacity`} disabled={loading}>
               {loading ? "Processing..." : "Logout"}
             </button>
+          </div>
+
+          <div className={profileStyles.card}>
+            <h2 className={profileStyles.cardTitle}>
+              Notification Subscriptions
+            </h2>
+
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={subscriptions.fillSubscribed}
+                  onChange={(e) => handleSubscriptionChange("fill", e.target.checked)}
+                  disabled={loading}
+                  className="w-4 h-4 accent-teal-500"
+                />
+                <div>
+                  <p className="font-medium text-gray-800">Fill Notifications</p>
+                  <p className="text-sm text-gray-500">Get notified when someone has filled the cabinet</p>
+                </div>
+              </label>
+
+
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={subscriptions.emptySubscribed}
+                  onChange={(e) => handleSubscriptionChange("empty", e.target.checked)}
+                  disabled={loading}
+                  className="w-4 h-4 accent-teal-500"
+                />
+                <div>
+                  <p className="font-medium text-gray-800">Empty Notifications</p>
+                  <p className="text-sm text-gray-500">Get notified when the cabinet has gotten empty</p>
+                </div>
+              </label>
+
+            </div>
           </div>
 
         </div>

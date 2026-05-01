@@ -51,7 +51,12 @@ export async function registerUser(req, res) {
     res.status(201).json({
       success: true,
       token,
-      user: { id: user._id, name: user.name, email: user.email }
+      user: {
+        id: user._id, name: user.name, email: user.email,
+        volunteerStatus: user.volunteerStatus,   // will be false
+        fillSubscribed: user.fillSubscribed,     // will be false
+        emptySubscribed: user.emptySubscribed    // will be false
+      }
     });
   }
   catch (error) {
@@ -85,9 +90,7 @@ export async function loginUser(req, res) {
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.status(401).json({
-
-      })
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
     const token = createToken(user._id);
@@ -98,7 +101,10 @@ export async function loginUser(req, res) {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        volunteerStatus: user.volunteerStatus,
+        fillSubscribed: user.fillSubscribed,
+        emptySubscribed: user.emptySubscribed
       }
     })
 
@@ -115,14 +121,16 @@ export async function loginUser(req, res) {
 // to get login user details
 export async function getCurrentUser(req, res) {
   try {
-    const user = await User.findById(req.user.id).select("name email");
+    //const user = await User.findById(req.user.id).select("name email");
+    const user = await User.findById(req.user.id).select("name email volunteerStatus fillSubscribed emptySubscribed");
+
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found"
       });
     }
-    res.json({ succes: true, user });
+    res.json({ success: true, user });
   }
 
   catch (error) {
@@ -154,7 +162,7 @@ export async function updateProfile(req, res) {
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { name, email },
-      { new: true, runValidators: true, select: "name email" }
+      { new: true, runValidators: true, select: "name email volunteerStatus fillSubscribed emptySubscribed" }
     );
     res.json({
       success: true,
@@ -206,6 +214,96 @@ export async function updatePassword(req, res) {
     res.status(500).json({
       success: false,
       message: "Server Error"
+    });
+  }
+}
+
+
+// to change volunteerStatus
+export async function switchVolunteerStatus(req, res) {
+
+  const { volunteerStatus } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id).select("volunteerStatus");
+    if (!user) {
+      return res.status(409).json({
+        success: false,
+        message: "User not found."
+      })
+    }
+
+    user.volunteerStatus = volunteerStatus;
+    await user.save();
+    res.json({
+      success: true,
+      message: "Volunteer Status changed"
+    });
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error when changing volunteer status"
+    });
+  }
+}
+
+// to change fillSubscribed (available to all users)
+export async function switchFillSub(req, res) {
+  //will be sent on change from front end
+  const { subscriptionStatus } = req.body;
+  try {
+    const user = await User.findById(req.user.id).select("fillSubscribed");
+    if (!user) {
+      return res.status(409).json({
+        success: false,
+        message: "User not found."
+      })
+    }
+
+    user.fillSubscribed = subscriptionStatus;
+    await user.save();
+    res.json({
+      success: true,
+      message: "Fill Subscription Status changed"
+    });
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error when changing fill subscription status"
+    });
+  }
+}
+
+
+// to change emptySubscribed (available only to volunteers)
+export async function switchEmptySub(req, res) {
+  //will be sent on change from front end
+  const { subscriptionStatus } = req.body;
+  try {
+    const user = await User.findById(req.user.id).select("emptySubscribed");
+    if (!user) {
+      return res.status(409).json({
+        success: false,
+        message: "User not found."
+      })
+    }
+
+    user.emptySubscribed = subscriptionStatus;
+    await user.save();
+    res.json({
+      success: true,
+      message: "Empty Subscription Status changed"
+    });
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error when changing empty subscription status"
     });
   }
 }
