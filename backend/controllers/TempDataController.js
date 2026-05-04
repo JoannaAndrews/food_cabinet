@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const MAX_TIMESTAMPS = 120;
+const MAX_TIMESTAMPS = 72;
 const BASELINE_KEY = "baseline_weight";
 const BATTERY_KEY = "battery";
 const DEFAULT_BASELINE_WEIGHT = 100;

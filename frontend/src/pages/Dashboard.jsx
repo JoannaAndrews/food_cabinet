@@ -8,7 +8,7 @@ const socket = io("http://localhost:5000");
 const USE_MOCK_DATA = true;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
-const MOCK_POINTS = 120;
+const MOCK_POINTS = 72;
 const DEFAULT_BASELINE_WEIGHT = 100;
 const API_BASE = "http://localhost:5000";
 
