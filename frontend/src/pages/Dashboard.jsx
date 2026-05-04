@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import { io } from "socket.io-client";
 import "../App.css";
@@ -27,13 +28,58 @@ const buildMockData = () => {
 
 function Dashboard() {
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
   const [capacityFilled, setCapacityFilled] = useState(0);
   const [batteryPercent, setBatteryPercent] = useState(null);
-  const currentWeight = data.length > 0 ? Number(data[data.length - 1].weight) : 0;
+  const [loading, setLoading] = useState(false);
 
-  const handleSendFilledNotification = () => {
-    console.log(`Notification requested: cabinet filled at ${currentWeight.toFixed(1)} lbs`);
-    window.alert("Notification sent: cabinet is filled.");
+  const currentWeight = data.length > 0 ? Number(data[data.length - 1].weight) : 0;
+  const emptyNotifiedRef = useRef(false);
+
+  const getAuthToken = useCallback(() => {
+    return localStorage.getItem("token") || sessionStorage.getItem("token");
+  }, []);
+
+  //API request
+  const handleApiRequest = useCallback(async (method, endpoint, data = null) => {
+    const token = getAuthToken();
+    console.log("token:", token);
+    if (!token) {
+      navigate("/login");
+      return null;
+    }
+
+    try {
+      setLoading(true);
+      const config = {
+        method,
+        url: `${API_BASE}${endpoint}`,
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      if (data) config.data = data;
+      const response = await axios(config);
+      return response.data;
+    } catch (error) {
+      console.error(`${method} request error:`, error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+
+  }, [getAuthToken, navigate],);
+
+  const handleSendFilledNotification = async () => {
+    try {
+      const endpoint = "/user/notify";
+      const res = await handleApiRequest("post", endpoint, { type: "filled" });
+      window.alert(`Notification sent to ${res.notified} subscribers!`);
+    } catch (err) {
+      console.error("Failed to send notification", err);
+      window.alert("Failed to send notification.");
+    }
   };
 
   const fetchTempData = async () => {
@@ -78,6 +124,25 @@ function Dashboard() {
     socket.on("uplink", onUplink);
     return () => socket.off("uplink", onUplink);
   }, []);
+
+  useEffect(() => {
+    const sendEmptyNotification = async () => {
+      try {
+        if (capacityFilled <= 5 && capacityFilled > 0 && !emptyNotifiedRef.current) {
+          emptyNotifiedRef.current = true;
+          const res = await handleApiRequest("post", "/user/notify", { type: "empty" });
+          window.alert(`Empty alert sent to ${res.notified} subscribers!`);
+        }
+        if (capacityFilled > 5) {
+          emptyNotifiedRef.current = false;
+        }
+      } catch (error) {
+        console.error("Failed to send empty notification", error);
+      }
+    };
+
+    sendEmptyNotification();
+  }, [capacityFilled]);
 
   const chartData = useMemo(() => {
     if (data.length === 0) return null;
