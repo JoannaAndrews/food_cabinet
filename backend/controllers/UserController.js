@@ -2,12 +2,53 @@ import User from '../models/userModel.js';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
 const JWT_SECRET = 'jwt_secret';
 const TOKEN_EXPIRES = '24h';
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,      // your gmail
+    pass: process.env.GMAIL_APP_PASSWORD  // NOT your regular password
+  },
+  tls: {
+    rejectUnauthorized: false  // add this
+  }
+});
+
 const createToken = (userId) =>
   jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES });
+
+//Notify subscribers
+export async function notifyUser(req, res) {
+  const { type } = req.body;
+  try {
+    const query = type === "filled" ? { fillSubscribed: true } : { emptySubscribed: true };
+    const subscribers = await User.find(query).select('name email');
+
+    if (subscribers.length == 0) {
+      return res.json({ success: true, notified: 0 });
+    }
+
+    const emails = subscribers.map(s => s.email);
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: emails,
+      subject: type === "filled" ? "Cabinet is filled!" : "Cabinet is almost empty",
+      text: type === "filled"
+        ? "The food cabinet has been filled!"
+        : "The food cabinet is almost empty. Please restock soon."
+    });
+
+    res.json({ success: true, notified: emails.length });
+
+  } catch (error) {
+    console.error("Notify error: ", error);
+    res.status(500).json({ error: "Failed to send notification" });
+  }
+}
 
 //Register a User
 export async function registerUser(req, res) {
