@@ -109,25 +109,48 @@ const App = () => {
         const storedToken = localToken || sessionToken || null;
         const tokenFromLocal = !!localToken;
 
-        if (storedUser) {
-          setUser(storedUser);
-          setToken(storedToken);
-          setIsLoading(false);
-          return;
-        }
+        // if (storedUser) {
+        //   setUser(storedUser);
+        //   setToken(storedToken);
+        //   setIsLoading(false);
+        //   return;
+        // }
 
         if (storedToken) {
           try {
-            const res = await axios.get(`${API_URL}/api/user/me`, {
+            const res = await axios.get(`${API_URL}/user/me`, {
               headers: { Authorization: `Bearer ${storedToken}` }
             });
-            const profile = res.data;
-            persistAuth(profile, storedToken, tokenFromLocal);
+            const profile = res.data.user || res.data;
+            setUser({
+              ...profile,
+              volunteerStatus: profile.volunteerStatus ?? false,
+              fillSubscribed: profile.fillSubscribed ?? false,
+              emptySubscribed: profile.emptySubscribed ?? false,
+            });
+            setToken(storedToken);
           } catch (fetchErr) {
-            console.warn("Could not fetch profile with stored token:", fetchErr);
+            console.warn("Token invalid or expired:", fetchErr);
             clearAuth();
+            navigate("/login");
           }
+        } else if (storedUser?.isGuest === true) {
+          // restore guest session without hitting the server
+          setUser(storedUser);
         }
+
+        // if (storedToken) {
+        //   try {
+        //     const res = await axios.get(`${API_URL}/user/me`, {
+        //       headers: { Authorization: `Bearer ${storedToken}` }
+        //     });
+        //     const profile = res.data;
+        //     persistAuth(profile, storedToken, tokenFromLocal);
+        //   } catch (fetchErr) {
+        //     console.warn("Could not fetch profile with stored token:", fetchErr);
+        //     clearAuth();
+        //   }
+        // }
       } catch (err) {
         console.error("error bootstrapping auth:", err);
       } finally {
