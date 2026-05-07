@@ -31,10 +31,15 @@ export const connectMQTT = (io) => {
       return;
     }
 
+    if (!decoded || typeof decoded.battery != "number") {
+      return;
+    }
+
     //update data.json by adding new weight entry
     const entry = {
       time: new Date(payload.received_at).toISOString(),
-      weight: payload.uplink_message.decoded_payload.weight
+      weight: payload.uplink_message.decoded_payload.weight,
+      battery: payload.uplink_message.decoded_payload.battery
     };
 
     // Use timestamp as key
