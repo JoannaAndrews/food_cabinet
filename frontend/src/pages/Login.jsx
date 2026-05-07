@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { useNavigate, Link } from "react-router";
 import axios from "axios";
 
-const Login = ({ onLogin, onGuestLogin, API_URL = "http://localhost:5000" }) => {
+const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000" }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);

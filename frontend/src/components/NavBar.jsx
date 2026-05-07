@@ -5,7 +5,8 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown, User, LogOut } from 'lucide-react';
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000';
+// const BASE_URL = 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const NavBar = ({ user: propUser, onLogout }) => {
   const navigate = useNavigate();
