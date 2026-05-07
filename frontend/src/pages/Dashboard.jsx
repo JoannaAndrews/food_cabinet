@@ -154,7 +154,7 @@ function Dashboard() {
     const innerWidth = width - padding.left - padding.right;
     const innerHeight = height - padding.top - padding.bottom;
     const minWeight = 0;
-    const maxWeight = 100;
+    const maxWeight = 50;
     const weightRange = maxWeight - minWeight;
 
     const points = data.map((d, idx) => {
