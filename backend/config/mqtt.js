@@ -8,7 +8,7 @@ dotenv.config();
 
 export const connectMQTT = (io) => {
 
-  const appId = "lab3-app-mad";
+  const appId = "joanna-test-application";
   const username = `${appId}@ttn`;
   const password = process.env.MQTT_KEY;
 
