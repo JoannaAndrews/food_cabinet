@@ -3,7 +3,6 @@ dotenv.config();
 
 const MAX_TIMESTAMPS = 72;
 const BASELINE_KEY = "baseline_weight";
-const BATTERY_KEY = "battery";
 const DEFAULT_BASELINE_WEIGHT = 100;
 const MIN_BASELINE_WEIGHT = 25;
 const PREV_WEIGHT_THRESHOLD_MULTIPLIER = 1.3;
@@ -60,43 +59,9 @@ async function setBaselineWeight(nextBaselineWeight) {
   }
 }
 
-async function getBatteryPercent() {
-  const batteryUrl = getKvValueUrl(BATTERY_KEY);
-  const batteryRes = await fetch(batteryUrl, {
-    headers: getAuthHeaders()
-  });
-
-  if (!batteryRes.ok) {
-    return null;
-  }
-
-  const raw = (await batteryRes.text()).trim();
-  if (!raw) {
-    return null;
-  }
-
-  const parsedNumber = Number(raw);
-  if (Number.isFinite(parsedNumber)) {
-    return parsedNumber;
-  }
-
-  try {
-    const parsedJson = JSON.parse(raw);
-    if (typeof parsedJson === "number" && Number.isFinite(parsedJson)) {
-      return parsedJson;
-    }
-  } catch {
-    // Non-JSON value, keep fallback null.
-  }
-
-  return null;
-}
-
 //to get weight data
 export async function getTempData(req, res) {
   let baselineWeight = await getOrCreateBaselineWeight();
-  let batteryPercent = null;
-  batteryPercent = await getBatteryPercent();
   if (baselineWeight < MIN_BASELINE_WEIGHT) {
     baselineWeight = MIN_BASELINE_WEIGHT;
     await setBaselineWeight(baselineWeight);
@@ -125,8 +90,11 @@ export async function getTempData(req, res) {
 
   // Sort by time
   values.sort((a, b) => new Date(a.time) - new Date(b.time));
-  const latestWeight = values.length > 0 ? Number(values[values.length - 1].weight) : 0;
+  const latestEntry = values.length > 0 ? values[values.length - 1] : null;
+  const latestWeight = latestEntry ? Number(latestEntry.weight) : 0;
   const prevWeight = values.length > 1 ? Number(values[values.length - 2].weight) : 0;
+  const parsedBattery = latestEntry ? Number(latestEntry.battery) : null;
+  const batteryPercent = Number.isFinite(parsedBattery) ? parsedBattery : null;
 
   if (latestWeight > 0 && prevWeight > 0) {
     if (latestWeight > prevWeight * PREV_WEIGHT_THRESHOLD_MULTIPLIER) {
