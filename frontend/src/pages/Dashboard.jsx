@@ -4,13 +4,14 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import "../App.css";
 
-const socket = io("http://localhost:5000");
+const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
 const USE_MOCK_DATA = true;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
 const DEFAULT_BASELINE_WEIGHT = 100;
-const API_BASE = "http://localhost:5000";
+// const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const buildMockData = () => {
   const now = new Date();

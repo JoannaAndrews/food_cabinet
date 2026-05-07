@@ -3,7 +3,7 @@ import { signupStyles } from "../assets/dummyStyles.js";
 import { useNavigate, Link } from "react-router";
 import axios from "axios";
 import { ArrowLeft, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
-const SignUp = ({ API_URL = "http://localhost:5000", onSignUp }) => {
+const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000", onSignUp }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

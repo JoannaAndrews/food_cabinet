@@ -9,7 +9,7 @@ import axios from "axios";
 import { EyeOff, Eye, User, Lock, X } from "lucide-react";
 
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 Modal.setAppElement('#root');
 // Move PasswordInput component outside of ProfilePage to prevent recreation on every render
