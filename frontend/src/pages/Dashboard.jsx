@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import "../App.css";
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
-const USE_MOCK_DATA = false;
+const USE_MOCK_DATA = true;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
@@ -154,7 +154,7 @@ function Dashboard() {
     const innerWidth = width - padding.left - padding.right;
     const innerHeight = height - padding.top - padding.bottom;
     const minWeight = 0;
-    const maxWeight = 100;
+    const maxWeight = 50;
     const weightRange = maxWeight - minWeight;
 
     const points = data.map((d, idx) => {

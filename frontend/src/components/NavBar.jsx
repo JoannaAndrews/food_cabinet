@@ -83,51 +83,39 @@ const NavBar = ({ user: propUser, onLogout }) => {
                 <p className={navbarStyles.userEmail}>{user?.email || "user@gmail.com"}</p>
               </div>
               <ChevronDown className={navbarStyles.chevronIcon(menuOpen)}></ChevronDown>
+            </button>
 
-              {/* dropdown menu */}
-              {menuOpen && (
-                <div className={navbarStyles.dropdownMenu}>
-                  <div className={navbarStyles.dropdownHeader}>
-                    <div className=" flex items-center gap-3"></div>
-                    <div className={navbarStyles.dropdownAvatar}>
-                      {user?.name?.[0]?.toUpperCase() || "U"}
-                    </div>
-                  </div>
-
-                  <div className={navbarStyles.dropdownName}>
-                    {user?.name || "User"}
-                  </div>
-                  <div className={navbarStyles.dropdownEmail}>
-                    {user?.email || "user@gmail.com"}
+            {/* dropdown menu */}
+            {menuOpen && (
+              <div className={navbarStyles.dropdownMenu}>
+                <div className={navbarStyles.dropdownHeader}>
+                  <div className="flex flex-col gap-2">
+                    {!user?.isGuest && (
+                      <button
+                        onClick={() => {
+                          setMenuOpen(false);
+                          navigate("/profile");
+                        }}
+                        className={navbarStyles.menuItem}
+                      >
+                        <User className=" w-4 h-4"></User>
+                        <span>My Profile</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className={`${navbarStyles.menuItem} text-red-600 hover:bg-red-50`}
+                    >
+                      <LogOut className=" w-4 h-4"></LogOut>
+                      <span>Log Out</span>
+                    </button>
                   </div>
                 </div>
-              )}
 
-            </button>
+              </div>
+            )}
           </div>)
         }
-
-        <div className={navbarStyles.menuItemContainer}>
-
-          {!user?.isGuest && (
-            <button onClick={() => {
-              setMenuOpen(false);
-              navigate("/profile");
-            }} className={navbarStyles.menuItem}>
-
-              <User className=" w-4 h-4"></User>
-              <span>My Profile</span>
-            </button>
-          )}
-
-        </div>
-
-        <div className={navbarStyles.menuItemBorder}>
-          <button onClick={handleLogout} className={navbarStyles.logoutButton}>
-            <LogOut className=" w-4 h-4"></LogOut>
-            <span>Log Out</span>
-          </button>
-        </div>
 
       </div>
     </header >
