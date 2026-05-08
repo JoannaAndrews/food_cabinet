@@ -7,7 +7,7 @@ import axios from "axios";
 const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000" }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -111,8 +111,8 @@ const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL |
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className=" mb-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
               <label htmlFor="email" className={loginStyles.label}>
                 Email Address
               </label>
@@ -123,7 +123,7 @@ const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL |
                 <input type="email" id="email" value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@example.com"
-                  className={loginStyles.passwordInput}
+                  className={loginStyles.input}
                   required>
                 </input>
 
@@ -133,6 +133,9 @@ const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL |
 
               </div>
 
+            </div>
+
+            <div>
               <label htmlFor="password" className={loginStyles.label}>
                 Password
               </label>
@@ -161,24 +164,16 @@ const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL |
                 </button>
 
               </div>
+            </div>
 
-
-              <label className={loginStyles.label}>
-              </label>
-
+            <div>
               <button
                 type="submit"
                 disabled={isLoading}
                 className={`${loginStyles.button} ${isLoading ? loginStyles.buttonDisabled : ""
                   }`}>
-                {isLoading ? (
-                  <>
-                    Signing In...
-                  </>
-                ) : "Sign In"}
+                {isLoading ? "Signing In..." : "Sign In"}
               </button>
-
-
             </div>
           </form>
 
@@ -195,7 +190,7 @@ const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL |
             <button
               type="button"
               onClick={onGuestLogin}
-              className={loginStyles.button}
+              className={loginStyles.guestButton}
             >
               Or... Continue as Guest
             </button>

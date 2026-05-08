@@ -193,7 +193,7 @@ function Dashboard() {
     batteryPercent == null ? null : Math.max(0, Math.min(100, Number(batteryPercent)));
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="dashboard-shell">
       <div className="battery-widget" style={{ position: "absolute", top: 0, right: "12px" }}>
         <div className="battery-icon">
           <div
@@ -205,13 +205,13 @@ function Dashboard() {
           Battery: {normalizedBatteryPercent == null ? "N/A" : `${normalizedBatteryPercent.toFixed(0)}%`}
         </span>
       </div>
-      <h1>Live Food Cabinet Data</h1>
+      <h1 className="dashboard-title">Live Food Cabinet Data</h1>
       <h2 className="availability-heading">
         <span className="availability-value">{currentWeight.toFixed(1)} lbs</span>
         <span className="availability-label">food available</span>
       </h2>
 
-      <div className="mb-4 rounded-xl border border-gray-100 p-3">
+      <div className="dashboard-card mb-4 p-3">
         <div className="capacity-header-layout">
           <div className="capacity-bar-wrap" style={{ gridColumn: 2 }}>
             <div className="capacity-label capacity-label-top">Full</div>
@@ -240,7 +240,7 @@ function Dashboard() {
       </div>
 
       {chartData && (
-        <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="dashboard-card mb-5 p-4">
           <div className="overflow-x-auto">
             <svg
               viewBox={`0 0 ${chartData.width} ${chartData.height}`}
@@ -299,47 +299,12 @@ function Dashboard() {
             <text x={chartData.width / 2} y={chartData.height - 4} textAnchor="middle" fontSize="12" fill="#334155">Time</text>
             </svg>
           </div>
-          <h3
-            style={{
-              marginTop: "14px",
-              textAlign: "center",
-              fontSize: "1.05rem",
-              fontWeight: 700,
-              color: "#334155",
-            }}
-          >
+          <h3 className="chart-caption">
             Weight History (Past 12 Hours)
           </h3>
         </div>
       )}
 
-      <div className=" space-y-4 max-h-[500px] -mx-5 overflow-y-auto pr-2">
-        {data.map((dataItem) => {
-          const { weight, time } = dataItem;
-          return (
-            <div key={time} className="flex items-center lg:flex-col xl:flex-row md:flex-row justify-between p-1 -mx-0 lg:p-4 md:p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 border border-gray-100">
-              <div className=" flex items-center gap-1 md:gap-4 lg:gap-3">
-                <div>
-                  <p>{weight}</p>
-                  <p>
-                    {new Date(time).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
-        {data.length === 0 && (
-          <div>
-            <p>No recent data</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

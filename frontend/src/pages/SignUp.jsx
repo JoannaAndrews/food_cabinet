@@ -8,7 +8,6 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -20,16 +19,6 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
       headers: { Authorization: `Bearer ${token}` }
     })
     return res.data;
-  }
-
-  const persistAuth = () => {
-    const storage = rememberMe ? localStorage : sessionStorage;
-    try {
-      if (token) storage.setItem("token", token);
-      if (profile) storage.setItem("user", JSON.stringify(profile));
-    } catch (err) {
-      console.error("Storage Error: ", err);
-    }
   }
 
   //to check if all fields are entered by user
@@ -71,7 +60,7 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
       const profile = await fetchProfile(token); // fetch user profile
 
       // persist based on rememberMe
-      const storage = rememberMe ? localStorage : sessionStorage;
+      const storage = sessionStorage;
       if (token) storage.setItem("token", token);
       if (profile) storage.setItem("user", JSON.stringify(profile));
 
@@ -113,8 +102,8 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
         <div className={signupStyles.formContainer}>
           {errors.api && <p className={signupStyles.apiError}>{errors.api}</p>}
 
-          <form onSubmit={handleSubmit} noValidate>
-            <div className=" mb-6">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+            <div>
               <label htmlFor="name" className={signupStyles.label}>
                 Full Name
               </label>
@@ -124,7 +113,7 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
                   <User className="w-5 h-5"></User>
                 </div>
                 <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)}
-                  className={`${signupStyles.input} ${errors.name ? "border-red-300" : "border-gray-200"
+                  className={`${signupStyles.input} ${errors.name ? "border-red-300" : ""
                     }`}
                   placeholder="John Doe"
                 ></input>
@@ -136,7 +125,7 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
             </div>
 
 
-            <div className=" mb-6">
+            <div>
               <label htmlFor="email" className={signupStyles.label}>
                 Email
               </label>
@@ -146,43 +135,43 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
                   <Mail className="w-5 h-5"></Mail>
                 </div>
                 <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className={`${signupStyles.input} ${errors.name ? "border-red-300" : "border-gray-200"
+                  className={`${signupStyles.input} ${errors.email ? "border-red-300" : ""
                     }`}
                   placeholder="example@email.com"
                 ></input>
               </div>
 
-              {errors.name && (
-                <p className={signupStyles.fieldError}>{errors.name}</p>
+              {errors.email && (
+                <p className={signupStyles.fieldError}>{errors.email}</p>
               )}
+            </div>
 
-              <div className=" mb-6">
-                <label htmlFor="password" className={signupStyles.label}>
-                  Password
-                </label>
+            <div>
+              <label htmlFor="password" className={signupStyles.label}>
+                Password
+              </label>
 
-                <div className={signupStyles.inputContainer}>
-                  <div className={signupStyles.inputIcon}>
-                    <Lock className="w-5 h-5"></Lock>
-                  </div>
-                  <input type={showPassword ? "text" : "password"} id="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className={`${signupStyles.input} ${errors.name ? "border-red-300" : "border-gray-200"
-                      }`}
-                    placeholder="Your password here"
-                  ></input>
-
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className={signupStyles.passwordToggle}
-                  >
-                    {showPassword ? (<EyeOff className="w-5 h-5"></EyeOff>) : (<Eye className="w-5 h-5"></Eye>)
-                    }
-                  </button>
+              <div className={signupStyles.inputContainer}>
+                <div className={signupStyles.inputIcon}>
+                  <Lock className="w-5 h-5"></Lock>
                 </div>
+                <input type={showPassword ? "text" : "password"} id="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                  className={`${signupStyles.passwordInput} ${errors.password ? "border-red-300" : ""
+                    }`}
+                  placeholder="Your password here"
+                ></input>
 
-                {errors.name && (
-                  <p className={signupStyles.fieldError}>{errors.name}</p>
-                )}
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className={signupStyles.passwordToggle}
+                >
+                  {showPassword ? (<EyeOff className="w-5 h-5"></EyeOff>) : (<Eye className="w-5 h-5"></Eye>)
+                  }
+                </button>
               </div>
+
+              {errors.password && (
+                <p className={signupStyles.fieldError}>{errors.password}</p>
+              )}
             </div>
 
             <button type="submit"
