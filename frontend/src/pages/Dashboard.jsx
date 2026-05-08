@@ -14,7 +14,7 @@ import {
 import "../App.css";
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
