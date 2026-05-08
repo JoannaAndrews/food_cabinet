@@ -338,8 +338,8 @@ export const profileStyles = {
 
   // Modal styles
   modalContent: "bg-white rounded-2xl p-6 lg:px-28 w-full max-w-md",
-  modalHeader: "flex justify-between lg:whitespace-nowrap lg:space-x-20 mb-6",
-  modalTitle: "text-xl font-bold lg:pl-10 text-gray-800",
+  modalHeader: "relative flex items-center justify-center mb-6",
+  modalTitle: "text-xl font-bold text-gray-800 text-center whitespace-nowrap",
 
   // Password input
   passwordLabel: "block text-sm font-medium text-gray-700 mb-1",
@@ -397,32 +397,32 @@ export const modalStyles = {
 // In src/assets/dummyStyles.js - add these styles
 export const loginStyles = {
   // Page container
-  pageContainer: `min-h-screen flex items-center justify-center p-4 ${uiPrimitives.surfaces.pageShell}`,
+  pageContainer: "min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-50 to-emerald-50",
 
   // Card container
-  cardContainer: `w-full max-w-md overflow-hidden ${uiPrimitives.surfaces.card}`,
+  cardContainer: "w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden",
 
   // Header styles
-  header: "bg-slate-900 p-6 text-center",
-  avatar: "w-16 h-16 mx-auto rounded-full bg-teal-500/20 border border-teal-300/30 flex items-center justify-center mb-4",
-  headerTitle: "text-2xl font-semibold tracking-tight text-white",
-  headerSubtitle: "text-slate-300 mt-2",
+  header: "bg-gradient-to-r from-teal-500 to-emerald-600 p-6 text-center",
+  avatar: "w-20 h-20 mx-auto rounded-full bg-white/20 flex items-center justify-center mb-4",
+  headerTitle: "text-2xl font-bold text-white",
+  headerSubtitle: "text-teal-100 mt-2",
 
   // Form container
-  formContainer: "p-6 md:p-8",
+  formContainer: "p-8",
 
   // Error message
-  errorContainer: "mb-6 p-3 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center",
+  errorContainer: "mb-6 p-3 bg-red-50 text-red-700 rounded-lg flex items-center",
   errorIcon: "w-6 h-6 rounded-full bg-red-100 flex items-center justify-center mr-3",
   errorText: "break-words",
 
   // Form elements
-  label: `block mb-2 ${uiPrimitives.typography.label}`,
+  label: "block text-sm font-medium text-gray-700 mb-2",
   inputContainer: "relative",
-  inputIcon: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400",
-  input: `${uiPrimitives.controls.inputBase} ${uiPrimitives.controls.inputWithLeadingIcon}`,
-  passwordInput: `${uiPrimitives.controls.inputBase} ${uiPrimitives.controls.inputWithLeadingIcon} ${uiPrimitives.controls.inputWithTrailingIcon}`,
-  passwordToggle: "absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600",
+  inputIcon: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400",
+  input: "w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-300 focus:border-teal-500",
+  passwordInput: "w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-300 focus:border-teal-500",
+  passwordToggle: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600",
 
   // Checkbox
   checkboxContainer: "mb-6 flex items-center",
@@ -430,14 +430,13 @@ export const loginStyles = {
   checkboxLabel: "ml-2 block text-sm text-gray-700",
 
   // Button
-  button: `w-full ${uiPrimitives.controls.buttonBase} ${uiPrimitives.controls.buttonPrimary}`,
+  button: "w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition-all flex items-center justify-center",
   buttonDisabled: "opacity-80 cursor-not-allowed",
-  guestButton: `w-full ${uiPrimitives.controls.buttonBase} ${uiPrimitives.controls.buttonSecondary}`,
 
   // Sign up link
   signUpContainer: "mt-8 text-center",
-  signUpText: "text-slate-600",
-  signUpLink: "font-medium text-teal-700 hover:text-teal-800 hover:underline",
+  signUpText: "text-gray-600",
+  signUpLink: "font-medium text-teal-600 hover:underline",
 
   // Spinner for loading state
   spinner: "animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -447,14 +446,14 @@ export const loginStyles = {
 export const navbarStyles = {
   // Layout and container styles
   header: "sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm",
-  container: "flex items-center justify-between px-4 py-3 md:px-8 max-w-7xl mx-auto",
+  container: "flex items-center justify-between px-2 py-3 md:px-4",
 
   // Logo styles
-  logoContainer: "flex items-center gap-0 cursor-pointer",
+  logoContainer: "flex items-center gap-2 cursor-pointer",
   logoImage: "w-15 h-15 rounded-xl overflow-hidden",
 
   // Text styles
-  logoText: "lg:text-3xl md:text-3xl text-2xl text-slate-900 font-[550] lobster-regular",
+  logoText: "inline-block text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight leading-[1.25] pb-1 bg-gradient-to-r from-teal-700 to-cyan-700 bg-clip-text text-transparent whitespace-nowrap",
 
   // User profile styles
   userContainer: "relative",

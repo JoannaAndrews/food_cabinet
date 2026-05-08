@@ -190,7 +190,7 @@ const Login = ({ onLogin, onGuestLogin, API_URL = import.meta.env.VITE_API_URL |
             <button
               type="button"
               onClick={onGuestLogin}
-              className={loginStyles.guestButton}
+              className={loginStyles.button}
             >
               Or... Continue as Guest
             </button>

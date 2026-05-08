@@ -6,7 +6,7 @@ import { memo } from 'react';
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import axios from "axios";
-import { EyeOff, Eye, User, Lock, X } from "lucide-react";
+import { EyeOff, Eye, User, Lock } from "lucide-react";
 
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -435,13 +435,6 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
       <div className={profileStyles.modalContent}>
         <div className={profileStyles.modalHeader}>
           <h3 className={profileStyles.modalTitle}>Change Password</h3>
-          <button
-            onClick={closePasswordModal}
-            className="text-gray-500 hover:text-gray-800 disabled:opacity-50"
-            disabled={loading}
-          >
-            <X className="w-6 h-6" />
-          </button>
         </div>
 
         <form onSubmit={handlePasswordSubmit} className="space-y-4 lg:-mx-20">
@@ -481,7 +474,7 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className={profileStyles.buttonPrimary}
+              className={`${profileStyles.buttonPrimary} min-w-[150px] text-sm md:text-base whitespace-nowrap`}
               disabled={loading}
             >
               {loading ? 'Updating...' : 'Update Password'}
@@ -489,7 +482,7 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
             <button
               type="button"
               onClick={closePasswordModal}
-              className={profileStyles.buttonSecondary}
+              className={`${profileStyles.buttonSecondary} min-w-[110px] text-sm md:text-base whitespace-nowrap`}
               disabled={loading}
             >
               Cancel
