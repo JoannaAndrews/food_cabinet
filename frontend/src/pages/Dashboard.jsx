@@ -194,7 +194,7 @@ function Dashboard() {
 
   return (
     <div style={{ position: "relative" }}>
-      <div className="battery-widget" style={{ position: "absolute", top: 0, right: 0 }}>
+      <div className="battery-widget" style={{ position: "absolute", top: 0, right: "12px" }}>
         <div className="battery-icon">
           <div
             className="battery-fill"
@@ -206,26 +206,13 @@ function Dashboard() {
         </span>
       </div>
       <h1>Live Food Cabinet Data</h1>
-      <h2
-        style={{
-          textAlign: "center",
-          marginBottom: "18px",
-          fontSize: "1.35rem",
-          fontWeight: 700,
-          color: "#1e293b",
-        }}
-      >
-        {currentWeight.toFixed(1)} lbs of food is available!
+      <h2 className="availability-heading">
+        <span className="availability-value">{currentWeight.toFixed(1)} lbs</span>
+        <span className="availability-label">food available</span>
       </h2>
 
       <div className="mb-4 rounded-xl border border-gray-100 p-3">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr auto 1fr",
-            alignItems: "center",
-          }}
-        >
+        <div className="capacity-header-layout">
           <div className="capacity-bar-wrap" style={{ gridColumn: 2 }}>
             <div className="capacity-label capacity-label-top">Full</div>
             <div className="capacity-bar">
@@ -240,34 +227,27 @@ function Dashboard() {
             </div>
             <div className="capacity-label capacity-label-bottom capacity-food-level-label">Food Level</div>
           </div>
-          <div style={{ gridColumn: 3, justifySelf: "end" }}>
+          <div className="capacity-notify-wrap">
             <button
               type="button"
               onClick={handleSendFilledNotification}
-              style={{
-                padding: "10px 14px",
-                borderRadius: "10px",
-                border: "1px solid #cbd5e1",
-                backgroundColor: "#ffffff",
-                color: "#0f172a",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className="filled-notify-button"
             >
-              Send notification that cabinet is filled
+              Send filled-cabinet notification
             </button>
           </div>
         </div>
       </div>
 
       {chartData && (
-        <div className="mb-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <svg
-            viewBox={`0 0 ${chartData.width} ${chartData.height}`}
-            className="h-[260px] min-w-[760px] w-full"
-            role="img"
-            aria-label="Weight in pounds over time"
-          >
+        <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="overflow-x-auto">
+            <svg
+              viewBox={`0 0 ${chartData.width} ${chartData.height}`}
+              className="h-[260px] min-w-[760px] w-full"
+              role="img"
+              aria-label="Weight in pounds over time"
+            >
             <defs>
               <linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
@@ -317,7 +297,19 @@ function Dashboard() {
               .map((p) => <circle key={p.time} cx={p.x} cy={p.y} r="3.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />)}
             <text x={14} y={9} fontSize="12" fill="#334155">Weight (lbs)</text>
             <text x={chartData.width / 2} y={chartData.height - 4} textAnchor="middle" fontSize="12" fill="#334155">Time</text>
-          </svg>
+            </svg>
+          </div>
+          <h3
+            style={{
+              marginTop: "14px",
+              textAlign: "center",
+              fontSize: "1.05rem",
+              fontWeight: 700,
+              color: "#334155",
+            }}
+          >
+            Weight History (Past 12 Hours)
+          </h3>
         </div>
       )}
 
