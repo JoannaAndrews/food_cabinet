@@ -33,14 +33,14 @@ export async function notifyUser(req, res) {
     }
 
     const emails = subscribers.map(s => s.email);
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: emails,
-      subject: type === "filled" ? "Cabinet is filled!" : "Cabinet is almost empty",
-      text: type === "filled"
-        ? "The food cabinet has been filled!"
-        : "The food cabinet is almost empty. Please restock soon."
-    });
+    // await transporter.sendMail({
+    //   from: process.env.GMAIL_USER,
+    //   to: emails,
+    //   subject: type === "filled" ? "Cabinet is filled!" : "Cabinet is almost empty",
+    //   text: type === "filled"
+    //     ? "The food cabinet has been filled!"
+    //     : "The food cabinet is almost empty. Please restock soon."
+    // });
 
     res.json({ success: true, notified: emails.length });
 
