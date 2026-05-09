@@ -184,7 +184,7 @@ function Dashboard() {
         if (capacityFilled <= 5 && capacityFilled > 0 && !emptyNotifiedRef.current) {
           emptyNotifiedRef.current = true;
           const res = await handleApiRequest("post", "/user/notify", { type: "empty" });
-          window.alert(`Empty alert sent to ${res.notified} subscribers!`);
+          toast.warning(`Empty alert sent to ${res.notified} subscribers!`);
         }
         if (capacityFilled > 5) {
           emptyNotifiedRef.current = false;
