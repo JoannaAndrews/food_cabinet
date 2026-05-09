@@ -18,7 +18,7 @@ const USE_MOCK_DATA = false;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
-const DEFAULT_BASELINE_WEIGHT = 100;
+const DEFAULT_BASELINE_WEIGHT = 50;
 const TIME_RANGE_TABS = [
   { label: "1H", hours: 1 },
   { label: "6H", hours: 6 },
@@ -34,7 +34,7 @@ const buildMockData = () => {
 
   for (let i = MOCK_POINTS - 1; i >= 0; i -= 1) {
     const time = new Date(alignedNow.getTime() - i * INTERVAL_MS).toISOString();
-    const weight = Number((Math.random() * 100).toFixed(2));
+    const weight = Number((Math.random() * 50).toFixed(2));
     mockData.push({ time, weight });
   }
 
