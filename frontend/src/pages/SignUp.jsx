@@ -2,10 +2,11 @@ import { useState } from "react";
 import { signupStyles } from "../assets/dummyStyles.js";
 import { useNavigate, Link } from "react-router";
 import axios from "axios";
-import { ArrowLeft, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { ArrowLeft, Building2, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000", onSignUp }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [organizationCode, setOrganizationCode] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -32,6 +33,9 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email is invalid"
     }
+    if (!organizationCode.trim()) {
+      newErrors.organizationCode = "Organization code is required";
+    }
     if (!password) {
       newErrors.password = "Password is required";
     } else if (password.length < 6) {
@@ -52,7 +56,7 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
     try {
       const res = await axios.post(
         `${API_URL}/user/register`,
-        { name, email, password },
+        { name, email, organizationCode: organizationCode.trim(), password },
         { headers: { "Content-Type": "application/json" } }
       );
 
@@ -143,6 +147,32 @@ const SignUp = ({ API_URL = import.meta.env.VITE_API_URL || "http://localhost:50
 
               {errors.email && (
                 <p className={signupStyles.fieldError}>{errors.email}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="organizationCode" className={signupStyles.label}>
+                Organization Code
+              </label>
+
+              <div className={signupStyles.inputContainer}>
+                <div className={signupStyles.inputIcon}>
+                  <Building2 className="w-5 h-5"></Building2>
+                </div>
+                <input
+                  type="text"
+                  id="organizationCode"
+                  value={organizationCode}
+                  onChange={(e) => setOrganizationCode(e.target.value)}
+                  className={`${signupStyles.input} ${errors.organizationCode ? "border-red-300" : ""
+                    }`}
+                  placeholder="Enter your organization code"
+                  autoComplete="off"
+                ></input>
+              </div>
+
+              {errors.organizationCode && (
+                <p className={signupStyles.fieldError}>{errors.organizationCode}</p>
               )}
             </div>
 

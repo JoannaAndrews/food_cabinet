@@ -52,7 +52,7 @@ export async function notifyUser(req, res) {
 
 //Register a User
 export async function registerUser(req, res) {
-  const { name, email, password } = req.body;
+  const { name, email, password, organizationCode } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json(
       {
@@ -60,6 +60,27 @@ export async function registerUser(req, res) {
         message: "All fields are required."
       }
     )
+  }
+  const orgInput = typeof organizationCode === "string" ? organizationCode.trim() : "";
+  if (!orgInput) {
+    return res.status(400).json({
+      success: false,
+      errors: { organizationCode: "Organization code is required." }
+    });
+  }
+  const expectedOrg = process.env.ORG_CODE?.trim();
+  if (!expectedOrg) {
+    console.error("ORG_CODE is not configured");
+    return res.status(500).json({
+      success: false,
+      message: "Server configuration error."
+    });
+  }
+  if (orgInput !== expectedOrg) {
+    return res.status(400).json({
+      success: false,
+      errors: { organizationCode: "Invalid organization code." }
+    });
   }
   if (!validator.isEmail(email)) {
     return res.status(400).json(

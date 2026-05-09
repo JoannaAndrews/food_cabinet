@@ -47,7 +47,7 @@ export const connectMQTT = (io) => {
     const key = `sensor:${entry.time}`;
 
     // 1 hour TTL = 3600 seconds
-    await kvPut(key, entry, 3600);
+    await kvPut(key, entry, 3600 * 12);
 
     //sending to frontend!
     io.emit("uplink", payload);
