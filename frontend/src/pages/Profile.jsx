@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { profileStyles } from "../assets/dummyStyles";
 import Modal from 'react-modal';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { memo } from 'react';
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -253,18 +253,6 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
   }, [loading])
 
   return <div className={profileStyles.container}>
-    <ToastContainer
-      position="top-right"
-      autoClose={2000}
-      hideProgressBar={false}
-      newestOnTop
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-    />
-
     <div className={profileStyles.mainContainer}>
       <div className={profileStyles.header}>
         <div className={profileStyles.avatar}>

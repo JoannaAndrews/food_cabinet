@@ -62,7 +62,7 @@ const NavBar = ({ user: propUser, onLogout }) => {
   }, [])
 
   return (
-    <header className={navbarStyles.header}>
+    <header id="app-chrome-navbar" className={navbarStyles.header}>
       <div className={navbarStyles.container}>
         <div className={navbarStyles.logoContainer}>
           <div className={navbarStyles.logoImage}>
