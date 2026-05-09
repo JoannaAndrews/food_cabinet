@@ -9,6 +9,10 @@ dotenv.config();
 export const connectMQTT = (io) => {
 
   const appId = process.env.MQTT_APPNAME;
+<<<<<<< HEAD
+=======
+  // const appId = "joanna-";
+>>>>>>> 0fd284e48505e0b4ae6f8d3f35732f3130aef706
   const username = `${appId}@ttn`;
   const password = process.env.MQTT_KEY;
 
@@ -46,7 +50,7 @@ export const connectMQTT = (io) => {
     const key = `sensor:${entry.time}`;
 
     // 1 hour TTL = 3600 seconds
-    await kvPut(key, entry, 3600);
+    await kvPut(key, entry, 3600 * 12);
 
     //sending to frontend!
     io.emit("uplink", payload);

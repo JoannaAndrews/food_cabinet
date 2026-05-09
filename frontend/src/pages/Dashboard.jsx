@@ -2,6 +2,15 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { io } from "socket.io-client";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import "../App.css";
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
@@ -9,7 +18,12 @@ const USE_MOCK_DATA = false;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
-const DEFAULT_BASELINE_WEIGHT = 100;
+const DEFAULT_BASELINE_WEIGHT = 50;
+const TIME_RANGE_TABS = [
+  { label: "1H", hours: 1 },
+  { label: "6H", hours: 6 },
+  { label: "12H", hours: 12 },
+];
 // const API_BASE = "http://localhost:5000";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -20,11 +34,38 @@ const buildMockData = () => {
 
   for (let i = MOCK_POINTS - 1; i >= 0; i -= 1) {
     const time = new Date(alignedNow.getTime() - i * INTERVAL_MS).toISOString();
-    const weight = Number((Math.random() * 100).toFixed(2));
+    const weight = Number((Math.random() * 50).toFixed(2));
     mockData.push({ time, weight });
   }
 
   return mockData;
+};
+
+const formatChartTime = (value) =>
+  new Date(value).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+const formatTooltipTime = (value) =>
+  new Date(value).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="chart-tooltip">
+      <p className="chart-tooltip-time">{formatTooltipTime(label)}</p>
+      <p className="chart-tooltip-value">{Number(payload[0].value).toFixed(1)} lbs</p>
+    </div>
+  );
 };
 
 function Dashboard() {
@@ -33,6 +74,7 @@ function Dashboard() {
   const [capacityFilled, setCapacityFilled] = useState(0);
   const [batteryPercent, setBatteryPercent] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedRangeHours, setSelectedRangeHours] = useState(12);
 
   const currentWeight = data.length > 0 ? Number(data[data.length - 1].weight) : 0;
   const emptyNotifiedRef = useRef(false);
@@ -145,55 +187,39 @@ function Dashboard() {
     sendEmptyNotification();
   }, [capacityFilled]);
 
-  const chartData = useMemo(() => {
-    if (data.length === 0) return null;
+  const chartData = useMemo(
+    () =>
+      data.map((entry) => ({
+        time: entry.time,
+        weight: Number(entry.weight),
+      })),
+    [data]
+  );
+  const filteredChartData = useMemo(() => {
+    if (chartData.length === 0) return [];
 
-    const width = 780;
-    const height = 260;
-    const padding = { top: 20, right: 20, bottom: 36, left: 52 };
-    const innerWidth = width - padding.left - padding.right;
-    const innerHeight = height - padding.top - padding.bottom;
-    const minWeight = 0;
-    const maxWeight = 50;
-    const weightRange = maxWeight - minWeight;
+    const latestTimestamp = new Date(chartData[chartData.length - 1].time).getTime();
+    if (!Number.isFinite(latestTimestamp)) return chartData;
 
-    const points = data.map((d, idx) => {
-      const clampedWeight = Math.max(minWeight, Math.min(maxWeight, Number(d.weight)));
-      const x = padding.left + (idx / Math.max(data.length - 1, 1)) * innerWidth;
-      const y = padding.top + ((maxWeight - clampedWeight) / weightRange) * innerHeight;
-      return { x, y, time: d.time };
-    });
+    const cutoff = latestTimestamp - selectedRangeHours * 60 * 60 * 1000;
+    const filtered = chartData.filter((point) => new Date(point.time).getTime() >= cutoff);
 
-    const path = points.map((p, idx) => `${idx === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
-    const areaPath = `${path} L ${points[points.length - 1].x} ${height - padding.bottom} L ${points[0].x} ${height - padding.bottom} Z`;
-
-    const yTicks = Array.from({ length: 5 }, (_, i) => {
-      const value = minWeight + (weightRange * i) / 4;
-      const y = padding.top + innerHeight - (innerHeight * i) / 4;
-      return { value, y };
-    });
-
-    const xTicks = points
-      .map((point, idx) => ({
-        x: point.x,
-        label: new Date(data[idx].time).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }),
-        isHourMark: idx % 6 === 0 || idx === points.length - 1,
-      }))
-      .filter((tick) => tick.isHourMark);
-
-    return { width, height, padding, points, path, areaPath, yTicks, xTicks };
-  }, [data]);
+    return filtered.length > 0 ? filtered : [chartData[chartData.length - 1]];
+  }, [chartData, selectedRangeHours]);
+  const xAxisTicks = useMemo(
+    () =>
+      filteredChartData
+        .filter((_, idx) => idx % 6 === 0 || idx === filteredChartData.length - 1)
+        .map((point) => point.time),
+    [filteredChartData]
+  );
 
   const capacityBarColor = capacityFilled < 25 ? "#dc2626" : capacityFilled <= 50 ? "#eab308" : "#16a34a";
   const normalizedBatteryPercent =
     batteryPercent == null ? null : Math.max(0, Math.min(100, Number(batteryPercent)));
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="dashboard-shell">
       <div className="battery-widget" style={{ position: "absolute", top: 0, right: "12px" }}>
         <div className="battery-icon">
           <div
@@ -205,13 +231,13 @@ function Dashboard() {
           Battery: {normalizedBatteryPercent == null ? "N/A" : `${normalizedBatteryPercent.toFixed(0)}%`}
         </span>
       </div>
-      <h1>Live Food Cabinet Data</h1>
+      <h1 className="dashboard-title">Live Food Cabinet Data</h1>
       <h2 className="availability-heading">
         <span className="availability-value">{currentWeight.toFixed(1)} lbs</span>
         <span className="availability-label">food available</span>
       </h2>
 
-      <div className="mb-4 rounded-xl border border-gray-100 p-3">
+      <div className="dashboard-card mb-4 p-3">
         <div className="capacity-header-layout">
           <div className="capacity-bar-wrap" style={{ gridColumn: 2 }}>
             <div className="capacity-label capacity-label-top">Full</div>
@@ -239,107 +265,74 @@ function Dashboard() {
         </div>
       </div>
 
-      {chartData && (
-        <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="overflow-x-auto">
-            <svg
-              viewBox={`0 0 ${chartData.width} ${chartData.height}`}
-              className="h-[260px] min-w-[760px] w-full"
-              role="img"
-              aria-label="Weight in pounds over time"
-            >
-            <defs>
-              <linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.05" />
-              </linearGradient>
-            </defs>
-            <rect
-              x={chartData.padding.left}
-              y={chartData.padding.top}
-              width={chartData.width - chartData.padding.left - chartData.padding.right}
-              height={chartData.height - chartData.padding.top - chartData.padding.bottom}
-              fill="#f8fafc"
-              rx="12"
-            />
-            <line x1={chartData.padding.left} y1={chartData.padding.top} x2={chartData.padding.left} y2={chartData.height - chartData.padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
-            <line x1={chartData.padding.left} y1={chartData.height - chartData.padding.bottom} x2={chartData.width - chartData.padding.right} y2={chartData.height - chartData.padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
-            {chartData.yTicks.map((tick) => (
-              <g key={tick.y}>
-                <line x1={chartData.padding.left} y1={tick.y} x2={chartData.width - chartData.padding.right} y2={tick.y} stroke="#e2e8f0" />
-                <text x={chartData.padding.left - 12} y={tick.y + 4} textAnchor="end" fontSize="11" fill="#64748b">{tick.value.toFixed(1)}</text>
-              </g>
-            ))}
-            {chartData.xTicks.map((tick, idx) => (
-              <g key={`${tick.x}-${idx}`}>
-                <line
-                  x1={tick.x}
-                  y1={chartData.height - chartData.padding.bottom}
-                  x2={tick.x}
-                  y2={chartData.height - chartData.padding.bottom + 5}
-                  stroke="#94a3b8"
-                />
-                <text
-                  x={tick.x}
-                  y={chartData.height - chartData.padding.bottom + 16}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fill="#64748b"
+      {chartData.length > 0 && (
+        <div className="dashboard-card mb-5 p-4">
+          <div className="chart-tabs" role="tablist" aria-label="Weight history time range">
+            {TIME_RANGE_TABS.map((tab) => {
+              const isActive = selectedRangeHours === tab.hours;
+              return (
+                <button
+                  key={tab.hours}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  className={`chart-tab ${isActive ? "chart-tab-active" : ""}`}
+                  onClick={() => setSelectedRangeHours(tab.hours)}
                 >
-                  {tick.label}
-                </text>
-              </g>
-            ))}
-            <path d={chartData.areaPath} fill="url(#weightAreaGradient)" />
-            <path d={chartData.path} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            {chartData.points
-              .filter((_, idx) => idx % 6 === 0 || idx === chartData.points.length - 1)
-              .map((p) => <circle key={p.time} cx={p.x} cy={p.y} r="3.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.5" />)}
-            <text x={14} y={9} fontSize="12" fill="#334155">Weight (lbs)</text>
-            <text x={chartData.width / 2} y={chartData.height - 4} textAnchor="middle" fontSize="12" fill="#334155">Time</text>
-            </svg>
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
-          <h3
-            style={{
-              marginTop: "14px",
-              textAlign: "center",
-              fontSize: "1.05rem",
-              fontWeight: 700,
-              color: "#334155",
-            }}
-          >
-            Weight History (Past 12 Hours)
+          <div className="modern-chart-wrap" role="img" aria-label="Weight in pounds over time">
+            <ResponsiveContainer width="100%" height={260}>
+              <AreaChart
+                data={filteredChartData}
+                margin={{ top: 12, right: 12, left: -18, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2563eb" stopOpacity={0.34} />
+                    <stop offset="100%" stopColor="#2563eb" stopOpacity={0.03} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="time"
+                  ticks={xAxisTicks}
+                  tickFormatter={formatChartTime}
+                  tick={{ fill: "#64748b", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  domain={[0, 50]}
+                  ticks={[0, 12.5, 25, 37.5, 50]}
+                  tick={{ fill: "#64748b", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={44}
+                  tickFormatter={(v) => `${Number(v).toFixed(0)}`}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#93c5fd", strokeWidth: 1 }} />
+                <Area
+                  type="monotone"
+                  dataKey="weight"
+                  stroke="#2563eb"
+                  strokeWidth={2.5}
+                  fill="url(#weightAreaGradient)"
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#2563eb", stroke: "#ffffff", strokeWidth: 2 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <h3 className="chart-caption">
+            Weight History (Past {selectedRangeHours} Hours)
           </h3>
         </div>
       )}
 
-      <div className=" space-y-4 max-h-[500px] -mx-5 overflow-y-auto pr-2">
-        {data.map((dataItem) => {
-          const { weight, time } = dataItem;
-          return (
-            <div key={time} className="flex items-center lg:flex-col xl:flex-row md:flex-row justify-between p-1 -mx-0 lg:p-4 md:p-4 hover:bg-gray-50 rounded-xl transition-all duration-300 border border-gray-100">
-              <div className=" flex items-center gap-1 md:gap-4 lg:gap-3">
-                <div>
-                  <p>{weight}</p>
-                  <p>
-                    {new Date(time).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
-        {data.length === 0 && (
-          <div>
-            <p>No recent data</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

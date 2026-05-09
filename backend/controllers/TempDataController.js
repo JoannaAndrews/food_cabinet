@@ -3,7 +3,7 @@ dotenv.config();
 
 const MAX_TIMESTAMPS = 72;
 const BASELINE_KEY = "baseline_weight";
-const DEFAULT_BASELINE_WEIGHT = 100;
+const DEFAULT_BASELINE_WEIGHT = 50;
 const MIN_BASELINE_WEIGHT = 25;
 const PREV_WEIGHT_THRESHOLD_MULTIPLIER = 1.3;
 

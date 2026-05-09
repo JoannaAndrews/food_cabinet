@@ -12,7 +12,8 @@ const NavBar = ({ user: propUser, onLogout }) => {
   const navigate = useNavigate();
   const menuRef = useRef();
   const [menuOpen, setMenuOpen] = useState(false);
-  const user = propUser || {
+  const [fetchedUser, setUser] = useState(null);
+  const user = propUser || fetchedUser || {
     name: "",
   } // if prop user is not found, we will pass in initial params for name, email 
 
@@ -87,7 +88,7 @@ const NavBar = ({ user: propUser, onLogout }) => {
 
             {/* dropdown menu */}
             {menuOpen && (
-              <div className={navbarStyles.dropdownMenu}>
+              <div className={`${navbarStyles.dropdownMenu} min-w-[220px]`}>
                 <div className={navbarStyles.dropdownHeader}>
                   <div className="flex flex-col gap-2">
                     {!user?.isGuest && (

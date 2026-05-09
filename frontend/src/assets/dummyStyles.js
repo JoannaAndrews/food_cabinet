@@ -1,5 +1,39 @@
 // assets/dummyStyles.js
 
+export const uiPrimitives = {
+  typography: {
+    pageTitle: "text-3xl md:text-4xl font-semibold tracking-tight text-slate-900",
+    sectionTitle: "text-xl md:text-2xl font-semibold tracking-tight text-slate-800",
+    body: "text-sm md:text-base text-slate-700",
+    muted: "text-sm text-slate-500",
+    label: "text-sm font-medium text-slate-700",
+    caption: "text-xs tracking-wide text-slate-500",
+  },
+  surfaces: {
+    pageShell: "min-h-screen bg-slate-50",
+    card: "bg-white border border-slate-200/80 rounded-2xl shadow-sm",
+    cardSoft: "bg-white border border-slate-200 rounded-xl shadow-sm",
+    section: "bg-slate-50/80 border border-slate-200 rounded-xl",
+  },
+  controls: {
+    buttonBase:
+      "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70",
+    buttonPrimary:
+      "bg-teal-600 text-white shadow-sm hover:bg-teal-700 hover:shadow-md",
+    buttonSecondary:
+      "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50",
+    buttonGhost:
+      "bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-800",
+    buttonDanger:
+      "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100",
+    inputBase:
+      "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-800 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500",
+    inputWithLeadingIcon: "pl-10",
+    inputWithTrailingIcon: "pr-10",
+    inputError: "border-red-400 focus:border-red-500 focus:ring-red-400/30",
+  },
+};
+
 export const dashboardStyles = {
   // Layout styles
   container: "min-h-screen p-4 md:p-6",
@@ -304,8 +338,8 @@ export const profileStyles = {
 
   // Modal styles
   modalContent: "bg-white rounded-2xl p-6 lg:px-28 w-full max-w-md",
-  modalHeader: "flex justify-between lg:whitespace-nowrap lg:space-x-20 mb-6",
-  modalTitle: "text-xl font-bold lg:pl-10 text-gray-800",
+  modalHeader: "relative flex items-center justify-center mb-6",
+  modalTitle: "text-xl font-bold text-gray-800 text-center whitespace-nowrap",
 
   // Password input
   passwordLabel: "block text-sm font-medium text-gray-700 mb-1",
@@ -411,36 +445,36 @@ export const loginStyles = {
 // Styles for Navbar component
 export const navbarStyles = {
   // Layout and container styles
-  header: "sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm",
-  container: "flex items-center justify-between px-4 py-3 md:px-8 max-w-7xl mx-auto",
+  header: "sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm",
+  container: "flex items-center justify-between px-2 py-3 md:px-4",
 
   // Logo styles
-  logoContainer: "flex items-center gap-0 cursor-pointer",
+  logoContainer: "flex items-center gap-2 cursor-pointer",
   logoImage: "w-15 h-15 rounded-xl overflow-hidden",
 
   // Text styles
-  logoText: "lg:text-3xl md:text-3xl text-2xl text-gray-900 font-[550] lobster-regular",
+  logoText: "inline-block text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight leading-[1.25] pb-1 bg-gradient-to-r from-teal-700 to-cyan-700 bg-clip-text text-transparent whitespace-nowrap",
 
   // User profile styles
   userContainer: "relative",
-  userButton: "flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors",
+  userButton: "flex items-center gap-2 px-3 py-2 rounded-xl border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all",
   userAvatar: "w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-cyan-500 text-white font-bold text-lg",
   statusIndicator: "absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white",
   userTextContainer: "text-left hidden md:block",
-  userName: "text-sm font-medium text-gray-800 truncate max-w-[120px]",
-  userEmail: "text-xs text-gray-500 truncate max-w-[120px]",
-  chevronIcon: (isOpen) => `w-4 h-4 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`,
+  userName: "text-sm font-medium text-slate-800 truncate max-w-[120px]",
+  userEmail: "text-xs text-slate-500 truncate max-w-[120px]",
+  chevronIcon: (isOpen) => `w-4 h-4 text-slate-500 transition-transform ${isOpen ? "rotate-180" : ""}`,
 
   // Dropdown menu styles
-  dropdownMenu: "absolute top-14 right-0 w-full bg-white rounded-xl shadow-lg border border-gray-100 z-50",
-  dropdownHeader: "px-4 py-3 border-b border-gray-100",
+  dropdownMenu: "absolute top-14 right-0 w-full bg-white rounded-xl shadow-lg border border-slate-200 z-50",
+  dropdownHeader: "px-3 py-3",
   dropdownAvatar: "w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg",
   dropdownName: "text-sm text-gray-800 ",
   dropdownEmail: "text-xs text-gray-500",
 
   // Menu items
   menuItemContainer: "p-1.5",
-  menuItem: "w-full px-4 py-3 text-left hover:bg-gray-50 text-sm text-gray-700 flex items-center gap-3 rounded-lg",
+  menuItem: "w-full px-3 py-2.5 text-left hover:bg-slate-50 text-sm text-slate-700 flex items-center gap-3 rounded-lg transition-colors",
   menuItemBorder: "p-1.5 border-t border-gray-100",
   logoutButton: "flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-red-50 text-red-600 rounded-lg"
 };
@@ -449,32 +483,32 @@ export const navbarStyles = {
 // In src/assets/dummyStyles.js - add these styles
 export const signupStyles = {
   // Page container (reusing from login)
-  pageContainer: "min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-teal-50 to-emerald-50",
+  pageContainer: loginStyles.pageContainer,
 
   // Card container (reusing from login)
-  cardContainer: "w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden",
+  cardContainer: loginStyles.cardContainer,
 
   // Header styles (reusing from login with additions)
-  header: "bg-gradient-to-r from-teal-500 to-emerald-600 p-6 text-center relative",
-  avatar: "w-20 h-20 mx-auto rounded-full bg-white/20 flex items-center justify-center mb-4",
-  headerTitle: "text-2xl font-bold text-white",
-  headerSubtitle: "text-teal-100 mt-2",
-  backButton: "absolute top-4 left-4 p-2 text-white rounded-full hover:bg-white/10 transition-colors",
+  header: "bg-slate-900 p-6 text-center relative",
+  avatar: "w-16 h-16 mx-auto rounded-full bg-teal-500/20 border border-teal-300/30 flex items-center justify-center mb-4",
+  headerTitle: "text-2xl font-semibold tracking-tight text-white",
+  headerSubtitle: "text-slate-300 mt-2",
+  backButton: "absolute top-4 left-4 p-2 text-slate-200 rounded-full hover:bg-white/10 transition-colors",
 
   // Form container (reusing from login)
-  formContainer: "p-8",
+  formContainer: "p-6 md:p-8",
 
   // Error messages
   apiError: "mb-4 text-center text-sm text-red-600",
   fieldError: "mt-1 text-sm text-red-600",
 
   // Form elements (reusing from login with additions)
-  label: "block text-sm font-medium text-gray-700 mb-2",
+  label: loginStyles.label,
   inputContainer: "relative",
-  inputIcon: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400",
-  input: "w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-teal-300 focus:border-teal-500",
-  passwordInput: "w-full pl-10 pr-10 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-teal-300 focus:border-teal-500",
-  passwordToggle: "absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600",
+  inputIcon: loginStyles.inputIcon,
+  input: loginStyles.input,
+  passwordInput: loginStyles.passwordInput,
+  passwordToggle: loginStyles.passwordToggle,
 
   // Checkbox (reusing from login)
   checkboxContainer: "mb-6 flex items-center",
@@ -482,13 +516,13 @@ export const signupStyles = {
   checkboxLabel: "ml-2 block text-sm text-gray-700",
 
   // Button (reusing from login)
-  button: "w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition-all flex items-center justify-center",
+  button: loginStyles.button,
   buttonDisabled: "opacity-80 cursor-not-allowed",
 
   // Sign in link (reusing from login with modifications)
   signInContainer: "mt-8 text-center",
-  signInText: "text-gray-600",
-  signInLink: "font-medium text-teal-600 hover:underline",
+  signInText: "text-slate-600",
+  signInLink: "font-medium text-teal-700 hover:text-teal-800 hover:underline",
 
   // Spinner for loading state (reusing from login)
   spinner: "animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -541,18 +575,18 @@ export const sidebarStyles = {
   },
 
   sidebarInner: {
-    base: "bg-white border-r  border-gray-200 shadow-md h-full flex flex-col"
+    base: "bg-white/95 backdrop-blur border-r border-slate-200 shadow-sm h-full flex flex-col"
   },
 
   // User profile section
   userProfileContainer: {
-    base: "p-4 border-b pt-20 md:pt-5 lg:pt-5 xl:pt-5 border-gray-100",
+    base: "p-4 border-b pt-20 md:pt-5 lg:pt-5 xl:pt-5 border-slate-200",
     collapsed: "px-3",
     expanded: "px-6"
   },
 
   userInitials: {
-    base: "w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center text-white font-bold text-xl"
+    base: "w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center text-white font-bold text-base shadow-sm"
   },
 
   // Menu items
@@ -561,39 +595,39 @@ export const sidebarStyles = {
   },
 
   menuItem: {
-    base: "relative flex items-center gap-3 py-3 rounded-xl font-medium transition-all duration-200",
-    active: "text-teal-600 bg-teal-50",
-    inactive: "text-gray-600 hover:text-teal-700 hover:bg-gray-50",
+    base: "relative flex items-center gap-3 py-2.5 rounded-xl font-medium transition-all duration-200",
+    active: "text-teal-700 bg-teal-50 border border-teal-100",
+    inactive: "text-slate-600 hover:text-teal-700 hover:bg-slate-50",
     collapsed: "justify-center px-0 mx-2",
     expanded: "px-4"
   },
 
   menuIcon: {
     active: "text-teal-600",
-    inactive: "text-gray-500"
+    inactive: "text-slate-500"
   },
 
-  activeIndicator: "absolute right-4 w-2 h-2 bg-teal-400 rounded-full animate-ping",
+  activeIndicator: "absolute right-4 w-2 h-2 bg-teal-400 rounded-full",
 
   // Toggle button
   toggleButton: {
-    base: "absolute -right-3 top-12 z-20 w-6 h-6 bg-white border border-gray-300 rounded-full flex items-center justify-center text-gray-500 hover:text-teal-600 hover:border-teal-400 hover:bg-teal-50 transition-all"
+    base: "absolute -right-3 top-12 z-20 w-7 h-7 bg-white border border-slate-300 rounded-full flex items-center justify-center text-slate-500 hover:text-teal-600 hover:border-teal-400 hover:bg-teal-50 transition-all shadow-sm"
   },
 
   // Footer section
   footerContainer: {
-    base: "border-t border-gray-100 p-4",
+    base: "border-t border-slate-200 p-4",
     collapsed: "px-3",
     expanded: "px-6"
   },
 
   footerLink: {
-    base: "flex items-center gap-3 py-2 rounded-xl font-medium text-gray-600 hover:text-teal-700 hover:bg-gray-50",
+    base: "flex items-center gap-3 py-2 rounded-xl font-medium text-slate-600 hover:text-teal-700 hover:bg-slate-50",
     collapsed: "justify-center"
   },
 
   logoutButton: {
-    base: "flex items-center gap-3 py-2 rounded-xl font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 w-full mt-1",
+    base: "flex items-center gap-3 py-2 rounded-xl font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 w-full mt-1",
     collapsed: "justify-center"
   },
 
@@ -602,26 +636,26 @@ export const sidebarStyles = {
   mobileBackdrop: "absolute inset-0 bg-black/30 backdrop-blur-sm",
 
   mobileSidebar: {
-    base: "absolute left-0 top-0 bottom-0 w-4/5 max-w-sm bg-white shadow-2xl rounded-r-2xl overflow-hidden"
+    base: "absolute left-0 top-0 bottom-0 w-4/5 max-w-sm bg-white shadow-xl rounded-r-2xl overflow-hidden border-r border-slate-200"
   },
 
-  mobileHeader: "p-6 flex justify-between items-center border-b border-gray-100",
+  mobileHeader: "p-6 flex justify-between items-center border-b border-slate-200",
   mobileUserContainer: "flex pt-28 items-center gap-3",
-  mobileCloseButton: "p-2 rounded-lg hover:bg-gray-100",
+  mobileCloseButton: "p-2 rounded-lg hover:bg-slate-100",
 
   mobileMenuList: "space-y-1",
   mobileMenuItem: {
     base: "flex items-center gap-4 px-6 py-4 font-medium",
-    active: "text-teal-600 bg-teal-50",
-    inactive: "text-gray-600 hover:bg-gray-50"
+    active: "text-teal-700 bg-teal-50",
+    inactive: "text-slate-600 hover:bg-slate-50"
   },
 
-  mobileFooter: "border-t border-gray-100 p-6",
-  mobileFooterLink: "flex items-center gap-4 py-2 font-medium text-gray-600 hover:text-teal-700",
-  mobileLogoutButton: "flex items-center gap-4 py-2 font-medium text-gray-600 hover:text-red-600 w-full",
+  mobileFooter: "border-t border-slate-200 p-6",
+  mobileFooterLink: "flex items-center gap-4 py-2 font-medium text-slate-600 hover:text-teal-700",
+  mobileLogoutButton: "flex items-center gap-4 py-2 font-medium text-slate-600 hover:text-red-600 w-full",
 
   // Mobile menu button
-  mobileMenuButton: "lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-cyan-500 to-teal-600 text-white rounded-full flex items-center justify-center shadow-xl"
+  mobileMenuButton: "lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-slate-900 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-slate-800 transition-colors"
 };
 
 // Helper function to combine class names
@@ -632,11 +666,11 @@ export const cn = (...classes) => classes.filter(Boolean).join(" ");
 export const styles = {
   // Layout and Container Styles
   layout: {
-    root: "min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col",
+    root: "min-h-screen bg-slate-50 flex flex-col",
     body: "flex flex-1 overflow-hidden",  // ← add this
     main: "flex-1 overflow-y-auto p-6 bg-gray-50",
     mainContainer: (sidebarCollapsed) =>
-      `p-4 pt-6 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`,
+      `px-4 md:px-6 py-5 md:py-6 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`,
   },
 
   // Header Styles

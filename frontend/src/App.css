@@ -1,4 +1,24 @@
 /* Capacity widget styles used by Dashboard */
+/* Dashboard surface + typography */
+.dashboard-shell {
+  position: relative;
+}
+
+.dashboard-title {
+  font-size: clamp(1.5rem, 2.3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.dashboard-card {
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
 .capacity-bar-wrap {
   margin-bottom: 0.5rem;
 }
@@ -180,4 +200,118 @@
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.chart-caption {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #959b97;
+  letter-spacing: 0.02em;
+}
+
+.modern-chart-wrap {
+  width: 100%;
+  height: 260px;
+}
+
+.chart-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #f8fafc;
+  margin-bottom: 0.75rem;
+}
+
+.chart-tab {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.36rem 0.72rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.chart-tab:hover {
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.chart-tab-active {
+  color: #ffffff;
+  background: #0f766e;
+  box-shadow: 0 1px 2px rgba(15, 118, 110, 0.24);
+}
+
+.chart-tooltip {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 8px 10px;
+}
+
+.chart-tooltip-time {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.chart-tooltip-value {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dashboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-height: 500px;
+  margin: 0 -1.25rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.dashboard-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.dashboard-list-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.dashboard-list-weight {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.dashboard-list-time {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.dashboard-empty-state {
+  text-align: center;
+  color: #64748b;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.85rem;
+  padding: 0.9rem;
+  margin: 0 1.25rem;
 }

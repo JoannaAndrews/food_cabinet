@@ -96,8 +96,8 @@ const SideBar = ({ user, isCollapsed, setIsCollapsed }) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
               >
-                <h2 className="text-small font-bold text-gray-8000 truncate">{username}</h2>
-                <p className="text-xs text-gray-500 truncate">{email}</p>
+                <h2 className="text-sm font-semibold text-slate-800 truncate">{username}</h2>
+                <p className="text-xs text-slate-500 truncate">{email}</p>
               </motion.div>
             )}
           </div>
@@ -113,7 +113,7 @@ const SideBar = ({ user, isCollapsed, setIsCollapsed }) => {
           <button onClick={handleLogout} className={cn(
             sidebarStyles.logoutButton.base,
             isCollapsed && sidebarStyles.logoutButton.collapsed
-          )}> <LogOut size={20} className="text-gray-500">{isCollapsed}</LogOut>
+          )}> <LogOut size={20} className="text-slate-500">{isCollapsed}</LogOut>
             {!isCollapsed && <span>Log Out</span>}</button>
 
         </div>
@@ -166,7 +166,7 @@ const SideBar = ({ user, isCollapsed, setIsCollapsed }) => {
                 <Link
                   to={path}
                   onClick={() => setMobileOpen(false)}
-                  className={cn(sidebarStyles.mobileMenuButton.base, pathname === path ? sidebarStyles.mobileMenuItem.active : sidebarStyles.mobileMenuItem.inactive)}
+                  className={cn(sidebarStyles.mobileMenuItem.base, pathname === path ? sidebarStyles.mobileMenuItem.active : sidebarStyles.mobileMenuItem.inactive)}
                 >
                   <span className={
                     pathname === path ? sidebarStyles.menuIcon.active : sidebarStyles.menuIcon.inactive
@@ -177,7 +177,7 @@ const SideBar = ({ user, isCollapsed, setIsCollapsed }) => {
               )}
             </ul>
             <button onClick={handleLogout} className={sidebarStyles.mobileLogoutButton}>
-              <LogOut size={20} className="text-gray-500"></LogOut>
+              <LogOut size={20} className="text-slate-500"></LogOut>
               <span>Logout</span>
             </button>
           </div>
