@@ -105,14 +105,17 @@ export async function getTempData(req, res) {
 
   console.log(`Baseline weight is now ${baselineWeight} lbs`);
 
-  const capacityFilled = baselineWeight > 0
+  const rawCapacityFilled = baselineWeight > 0
     ? (latestWeight / baselineWeight) * 100
     : 0;
+  const capacityFilled = Number(
+    Math.max(0, Math.min(100, rawCapacityFilled)).toFixed(2)
+  );
 
   res.json({
     baseline_weight: baselineWeight,
     battery_percent: batteryPercent,
-    capacity_filled: Number(capacityFilled.toFixed(2)),
+    capacity_filled: capacityFilled,
     data: values
   });
 }
