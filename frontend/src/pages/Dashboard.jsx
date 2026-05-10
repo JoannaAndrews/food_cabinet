@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import "../App.css";
+import { toast } from "react-toastify";
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
 const USE_MOCK_DATA = false;
@@ -116,12 +117,21 @@ function Dashboard() {
 
   const handleSendFilledNotification = async () => {
     try {
-      const endpoint = "/user/notify";
-      const res = await handleApiRequest("post", endpoint, { type: "filled" });
-      window.alert(`Notification sent to ${res.notified} subscribers!`);
+      const res = await handleApiRequest("post", "/user/notify", { type: "filled" });
+      if (res == null) return;
+      const n = Number(res.notified);
+      toast.success(
+        Number.isFinite(n)
+          ? `Cabinet filled email sent to ${n} subscriber${n === 1 ? "" : "s"}.`
+          : "Notification sent."
+      );
     } catch (err) {
       console.error("Failed to send notification", err);
-      window.alert("Failed to send notification.");
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Could not send notification. Try again.";
+      toast.error(msg);
     }
   };
 
@@ -174,7 +184,7 @@ function Dashboard() {
         if (capacityFilled <= 5 && capacityFilled > 0 && !emptyNotifiedRef.current) {
           emptyNotifiedRef.current = true;
           const res = await handleApiRequest("post", "/user/notify", { type: "empty" });
-          window.alert(`Empty alert sent to ${res.notified} subscribers!`);
+          toast.warning(`Empty alert sent to ${res.notified} subscribers!`);
         }
         if (capacityFilled > 5) {
           emptyNotifiedRef.current = false;
