@@ -19,7 +19,7 @@ const USE_MOCK_DATA = false;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
-const DEFAULT_BASELINE_WEIGHT = 50;
+const DEFAULT_BASELINE_WEIGHT = 30;
 const TIME_RANGE_TABS = [
   { label: "1H", hours: 1 },
   { label: "6H", hours: 6 },
