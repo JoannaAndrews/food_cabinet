@@ -15,7 +15,7 @@ import "../App.css";
 import { toast } from "react-toastify";
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
@@ -26,8 +26,8 @@ const TIME_RANGE_TABS = [
   { label: "6H", hours: 6 },
   { label: "12H", hours: 12 },
 ];
-const API_BASE = "http://localhost:5000";
-// const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const MOCK_WEIGHT_CAP = DEFAULT_BASELINE_WEIGHT * 1.2;
 
