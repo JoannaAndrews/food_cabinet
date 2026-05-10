@@ -36,10 +36,15 @@ export const connectMQTT = (io) => {
       return;
     }
 
+    let weight = decoded.weight;
+    if (weight < 0 && weight > -1.0) {
+      weight = 0.0;
+    }
+
     //update data.json by adding new weight entry
     const entry = {
       time: new Date(payload.received_at).toISOString(),
-      weight: payload.uplink_message.decoded_payload.weight,
+      weight: weight,
       battery: payload.uplink_message.decoded_payload.battery
     };
 
