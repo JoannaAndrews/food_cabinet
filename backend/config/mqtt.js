@@ -9,10 +9,7 @@ dotenv.config();
 export const connectMQTT = (io) => {
 
   const appId = process.env.MQTT_APPNAME;
-<<<<<<< HEAD
-=======
   // const appId = "joanna-";
->>>>>>> a6b7c3bc7195b813cf73501b6d4eba71b439aca7
   const username = `${appId}@ttn`;
   const password = process.env.MQTT_KEY;
   const client = mqtt.connect("mqtts://nam1.cloud.thethings.network:8883", {
