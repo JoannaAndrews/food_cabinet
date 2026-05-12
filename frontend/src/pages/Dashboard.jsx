@@ -19,7 +19,8 @@ const USE_MOCK_DATA = false;
 const INTERVAL_MINUTES = 10;
 const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 const MOCK_POINTS = 72;
-const DEFAULT_BASELINE_WEIGHT = 50;
+const DEFAULT_BASELINE_WEIGHT = 30;
+const MOCK_BATTERY_PERCENT = 84;
 const TIME_RANGE_TABS = [
   { label: "1H", hours: 1 },
   { label: "6H", hours: 6 },
@@ -28,18 +29,97 @@ const TIME_RANGE_TABS = [
 // const API_BASE = "http://localhost:5000";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const MOCK_WEIGHT_CAP = DEFAULT_BASELINE_WEIGHT * 1.2;
+
+const clampMockWeight = (w) =>
+  Number(Math.max(0, Math.min(MOCK_WEIGHT_CAP, w)).toFixed(2));
+
+/** Oldest → newest: plateaus, pickups, restocks, occasional empty/full — like real cabinet use. */
+const simulateCabinetWeights = (n) => {
+  const out = [];
+  let w = 11 + Math.random() * 14;
+  let idx = 0;
+
+  while (idx < n) {
+    const stableSteps = Math.min(n - idx, 3 + Math.floor(Math.random() * 14));
+    for (let s = 0; s < stableSteps; s++) {
+      const noise = (Math.random() - 0.5) * 0.22;
+      out.push(clampMockWeight(w + noise));
+      idx++;
+    }
+    if (idx >= n) break;
+
+    const r = Math.random();
+    if (r < 0.46) {
+      const take = 0.6 + Math.random() * 9;
+      const steps = Math.min(n - idx, 1 + Math.floor(Math.random() * 5));
+      const per = take / steps;
+      for (let s = 0; s < steps; s++) {
+        w = Math.max(0, w - per * (0.88 + Math.random() * 0.24));
+        out.push(clampMockWeight(w + (Math.random() - 0.5) * 0.18));
+        idx++;
+      }
+    } else if (r < 0.8) {
+      const before = w;
+      const room = MOCK_WEIGHT_CAP - before;
+      const add =
+        room > 2 ? 2.5 + Math.random() * Math.min(room, 17) : Math.random() * 1.8;
+      w = Math.min(MOCK_WEIGHT_CAP, before + add);
+      const riseSteps = Math.min(n - idx, 1 + (Math.random() < 0.32 ? 1 : 0));
+      for (let s = 0; s < riseSteps; s++) {
+        const t = riseSteps === 1 ? 1 : (s + 1) / riseSteps;
+        const interp = before + (w - before) * t;
+        out.push(clampMockWeight(interp + (Math.random() - 0.5) * 0.16));
+        idx++;
+      }
+    } else if (r < 0.92) {
+      const take = 5.5 + Math.random() * 12;
+      w = Math.max(0, w - take);
+      out.push(clampMockWeight(w + (Math.random() - 0.5) * 0.15));
+      idx++;
+    } else {
+      if (Math.random() < 0.52) {
+        w = Math.random() * 2.2;
+      } else {
+        w = 20 + Math.random() * (MOCK_WEIGHT_CAP - 20);
+      }
+      out.push(clampMockWeight(w));
+      idx++;
+    }
+  }
+
+  return out;
+};
+
 const buildMockData = () => {
   const now = new Date();
   const alignedNow = new Date(Math.floor(now.getTime() / INTERVAL_MS) * INTERVAL_MS);
+  const weights = simulateCabinetWeights(MOCK_POINTS);
   const mockData = [];
 
   for (let i = MOCK_POINTS - 1; i >= 0; i -= 1) {
     const time = new Date(alignedNow.getTime() - i * INTERVAL_MS).toISOString();
-    const weight = Number((Math.random() * 50).toFixed(2));
-    mockData.push({ time, weight });
+    const weightIndex = MOCK_POINTS - 1 - i;
+    mockData.push({ time, weight: weights[weightIndex] });
   }
 
   return mockData;
+};
+
+const clampCapacityFilledPercent = (value) => {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Number(Math.max(0, Math.min(100, n)).toFixed(2));
+};
+
+const readStoredUser = () => {
+  try {
+    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 };
 
 const formatChartTime = (value) =>
@@ -116,6 +196,10 @@ function Dashboard() {
   }, [getAuthToken, navigate],);
 
   const handleSendFilledNotification = async () => {
+    if (readStoredUser()?.isGuest) {
+      toast.info("Please Login to send notifications");
+      return;
+    }
     try {
       const res = await handleApiRequest("post", "/user/notify", { type: "filled" });
       if (res == null) return;
@@ -141,8 +225,8 @@ function Dashboard() {
         const mockData = buildMockData();
         const latestWeight = mockData.length > 0 ? Number(mockData[mockData.length - 1].weight) : 0;
         const mockCapacityFilled = (latestWeight / DEFAULT_BASELINE_WEIGHT) * 100;
-        setCapacityFilled(Number(mockCapacityFilled.toFixed(2)));
-        setBatteryPercent(null);
+        setCapacityFilled(clampCapacityFilledPercent(mockCapacityFilled));
+        setBatteryPercent(MOCK_BATTERY_PERCENT);
         setData(mockData);
         return;
       }
@@ -163,7 +247,7 @@ function Dashboard() {
         ? null
         : Number(payload?.battery_percent);
 
-      setCapacityFilled(Number.isFinite(serverCapacity) ? serverCapacity : 0);
+      setCapacityFilled(clampCapacityFilledPercent(serverCapacity));
       setBatteryPercent(Number.isFinite(serverBattery) ? serverBattery : null);
       setData(serverData);
     } catch (err) {
@@ -256,7 +340,7 @@ function Dashboard() {
               <div
                 className="capacity-bar-fill"
                 style={{
-                  "--capacity-fill": `${Math.max(0, Math.min(capacityFilled, 100))}%`,
+                  "--capacity-fill": `${capacityFilled}%`,
                   "--capacity-color": capacityBarColor,
                 }}
               />
@@ -338,7 +422,7 @@ function Dashboard() {
             </ResponsiveContainer>
           </div>
           <h3 className="chart-caption">
-            Weight History (Past {selectedRangeHours} Hours)
+            Weight History in lbs (Past {selectedRangeHours} Hours)
           </h3>
         </div>
       )}
