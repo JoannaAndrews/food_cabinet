@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import "../App.css";
 import { toast } from "react-toastify";
+import { NOTIFICATIONS_ENABLED } from "../config/notifications";
 
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
 const USE_MOCK_DATA = true;
@@ -196,6 +197,7 @@ function Dashboard() {
   }, [getAuthToken, navigate],);
 
   const handleSendFilledNotification = async () => {
+    if (!NOTIFICATIONS_ENABLED) return;
     if (readStoredUser()?.isGuest) {
       toast.info("Please Login to send notifications");
       return;
@@ -263,6 +265,7 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
+    if (!NOTIFICATIONS_ENABLED) return;
     const sendEmptyNotification = async () => {
       try {
         if (capacityFilled <= 5 && capacityFilled > 0 && !emptyNotifiedRef.current) {
@@ -332,8 +335,13 @@ function Dashboard() {
       </h2>
 
       <div className="dashboard-card mb-4 p-3">
-        <div className="capacity-header-layout">
-          <div className="capacity-bar-wrap" style={{ gridColumn: 2 }}>
+        <div
+          className={`capacity-header-layout${NOTIFICATIONS_ENABLED ? "" : " capacity-header-layout--no-notify"}`}
+        >
+          <div
+            className="capacity-bar-wrap"
+            style={NOTIFICATIONS_ENABLED ? { gridColumn: 2 } : undefined}
+          >
             <div className="capacity-label capacity-label-top">Full</div>
             <div className="capacity-bar">
               <div className="capacity-bar-text">{capacityFilled.toFixed(1)}%</div>
@@ -347,15 +355,17 @@ function Dashboard() {
             </div>
             <div className="capacity-label capacity-label-bottom capacity-food-level-label">Food Level</div>
           </div>
-          <div className="capacity-notify-wrap">
-            <button
-              type="button"
-              onClick={handleSendFilledNotification}
-              className="filled-notify-button"
-            >
-              Send filled-cabinet notification
-            </button>
-          </div>
+          {NOTIFICATIONS_ENABLED && (
+            <div className="capacity-notify-wrap">
+              <button
+                type="button"
+                onClick={handleSendFilledNotification}
+                className="filled-notify-button"
+              >
+                Send filled-cabinet notification
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -50,6 +50,15 @@
   align-items: center;
 }
 
+.capacity-header-layout--no-notify {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.capacity-header-layout--no-notify .capacity-bar-wrap {
+  grid-column: 1 !important;
+}
+
 .capacity-notify-wrap {
   grid-column: 3;
   justify-self: end;
