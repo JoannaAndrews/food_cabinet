@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import axios from "axios";
 import { EyeOff, Eye, User, Lock } from "lucide-react";
+import { NOTIFICATIONS_ENABLED } from "../config/notifications";
 
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -140,6 +141,7 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
 
   // Handle subscription changes
   const handleSubscriptionChange = useCallback(async (type, value) => {
+    if (!NOTIFICATIONS_ENABLED) return;
     const endpoint = type === "fill" ? "/user/subscription/fill" : "/user/subscription/empty";
 
     try {
@@ -347,43 +349,43 @@ const Profile = ({ user: propUser, onUpdateProfile, onLogout }) => {
             </button>
           </div>
 
-          <div className={profileStyles.card}>
-            <h2 className={profileStyles.cardTitle}>
-              Notification Subscriptions
-            </h2>
+          {NOTIFICATIONS_ENABLED && (
+            <div className={profileStyles.card}>
+              <h2 className={profileStyles.cardTitle}>
+                Notification Subscriptions
+              </h2>
 
-            <div className="space-y-4">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={subscriptions.fillSubscribed}
-                  onChange={(e) => handleSubscriptionChange("fill", e.target.checked)}
-                  disabled={loading}
-                  className="w-4 h-4 accent-teal-500"
-                />
-                <div>
-                  <p className="font-medium text-gray-800">Fill Notifications</p>
-                  <p className="text-sm text-gray-500">Get notified when someone has filled the cabinet</p>
-                </div>
-              </label>
+              <div className="space-y-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={subscriptions.fillSubscribed}
+                    onChange={(e) => handleSubscriptionChange("fill", e.target.checked)}
+                    disabled={loading}
+                    className="w-4 h-4 accent-teal-500"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-800">Fill Notifications</p>
+                    <p className="text-sm text-gray-500">Get notified when someone has filled the cabinet</p>
+                  </div>
+                </label>
 
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={subscriptions.emptySubscribed}
-                  onChange={(e) => handleSubscriptionChange("empty", e.target.checked)}
-                  disabled={loading}
-                  className="w-4 h-4 accent-teal-500"
-                />
-                <div>
-                  <p className="font-medium text-gray-800">Empty Notifications</p>
-                  <p className="text-sm text-gray-500">Get notified when the cabinet has gotten empty</p>
-                </div>
-              </label>
-
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={subscriptions.emptySubscribed}
+                    onChange={(e) => handleSubscriptionChange("empty", e.target.checked)}
+                    disabled={loading}
+                    className="w-4 h-4 accent-teal-500"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-800">Empty Notifications</p>
+                    <p className="text-sm text-gray-500">Get notified when the cabinet has gotten empty</p>
+                  </div>
+                </label>
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
